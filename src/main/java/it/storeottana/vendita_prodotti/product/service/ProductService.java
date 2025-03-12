@@ -1,0 +1,90 @@
+package it.storeottana.vendita_prodotti.product.service;
+
+import it.storeottana.vendita_prodotti.product.entity.Product;
+import it.storeottana.vendita_prodotti.product.repository.ProductRepo;
+import it.storeottana.vendita_prodotti.utils.FileStorageService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class ProductService {
+
+    @Autowired
+    private FileStorageService fileStorageService;
+    @Autowired
+    private ProductRepo productRepo;
+
+    public List<String> upload(MultipartFile[] files) throws Exception {
+        List<String> fileNames = new ArrayList<>();
+        for ( MultipartFile file : files ) {
+            String singleUpload = fileStorageService.estraiNomeFile(fileStorageService.uploadToCloudinary(file));
+            fileNames.add(singleUpload);
+        }
+        return fileNames;
+    }
+
+    public byte[] download(String fileName, HttpServletResponse response) throws Exception {
+        String extension = FilenameUtils.getExtension(fileName);
+        switch (extension) {
+            case "jpg", "jpeg" -> response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+            case "gif" -> response.setContentType(MediaType.IMAGE_GIF_VALUE);
+            case "png" -> response.setContentType(MediaType.IMAGE_PNG_VALUE);
+        }
+        response.setHeader("Content-Disposition","attachment; fileName=\""+fileName+"\"");
+        return fileStorageService.download(fileName);
+    }
+    public Object create(String name, MultipartFile[] files, String title, String description, double price,
+                            HttpServletRequest request) throws Exception {
+
+        Product product = new Product(name, upload(files),title,description,price);
+        return productRepo.saveAndFlush(product);
+    }
+
+    public List<Product> getAllProducts(){
+        return productRepo.findAll();
+    }
+
+    public List<Product> getProductByTitle(String title){
+        return productRepo.findByTitleContaining(title);
+    }
+
+    public Product getProductById(long id){
+        Optional <Product> product = productRepo.findById(id);
+        return product.orElse(null);
+    }
+
+    public Object updateProduct(long idProduct, MultipartFile[] files, String title, String description, double price,
+                                HttpServletRequest request) throws Exception {
+
+        Product productDB = productRepo.findById(idProduct).get();
+        if (!files[0].getOriginalFilename().isEmpty()) productDB.setFileNames(upload(files));
+        if (!title.isEmpty()) productDB.setTitle(title);
+        if (!description.isEmpty()) productDB.setDescription(description);
+        if (!String.valueOf(price).isEmpty()) productDB.setPrice(price);
+
+        productRepo.saveAndFlush(productDB);
+        return productDB;
+    }
+
+    public Object deleteProduct(long idProduct, HttpServletRequest request){
+        productRepo.deleteById(idProduct);
+        return true;
+    }
+    public Object deleteAllProducts(HttpServletRequest request){
+        productRepo.deleteAll();
+        return true;
+    }
+    public void prova() throws Exception {
+        fileStorageService.prova();
+    }
+}
