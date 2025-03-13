@@ -5,7 +5,7 @@ FROM eclipse-temurin:17-jdk
 WORKDIR /app
 
 # Copia il file JAR generato nel container
-COPY target/vendita-prodotti-1.0.0.jar app.jar
+COPY target/vendita-prodotti-0.0.1-SNAPSHOT.jar app.jar
 
 # Specifica la porta che l'app usa (modifica se necessario)
 EXPOSE 8080
