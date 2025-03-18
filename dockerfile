@@ -1,26 +1,23 @@
-# Fase 1: Build del progetto
-FROM eclipse-temurin:17-jdk AS builder
-
-# Imposta la directory di lavoro
+# Fase 1: Build dell'app
+FROM maven:3.8.4-openjdk-17 AS builder
 WORKDIR /app
 
-# Copia i file del progetto dentro il container
+# Copia il file pom.xml e scarica le dipendenze (opzionale)
+COPY pom.xml .
+RUN mvn dependency:go-offline
+
+# Copia il resto dell'app
 COPY . .
+
+# Aggiungi i permessi di esecuzione per mvnw
+RUN chmod +x mvnw
 
 # Compila il progetto e genera il JAR
 RUN ./mvnw clean package -DskipTests
 
 # Fase 2: Esecuzione dell'app
-FROM eclipse-temurin:17-jre
-
-# Imposta la directory di lavoro
+FROM openjdk:17-jdk-slim
 WORKDIR /app
-
-# Copia solo il file JAR dalla fase di build
 COPY --from=builder /app/target/*.jar app.jar
-
-# Espone la porta 8080 (Spring Boot usa questa porta di default)
 EXPOSE 8080
-
-# Comando per avviare l'applicazione
 CMD ["java", "-jar", "app.jar"]
