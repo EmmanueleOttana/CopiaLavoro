@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 @RestController
-@CrossOrigin(origins = {"http://127.0.0.1:5500", "http://localhost:3000"})
+@CrossOrigin(origins = {"http://127.0.0.1:5500", "http://localhost:3000, http://www.storeottana.it"})
 @RequestMapping("/insertion")
 public class ProductController {
     @Autowired
