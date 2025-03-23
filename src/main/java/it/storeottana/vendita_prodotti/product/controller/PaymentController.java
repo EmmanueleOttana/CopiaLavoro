@@ -28,7 +28,7 @@ public class PaymentController {
     @Autowired
     private ProductRepo productRepo;
 
-    @GetMapping("/checkout/{productId}")
+    @PostMapping("/checkout/{productId}")
     public ResponseEntity<String> processPayment(@PathVariable Long productId) {
         Optional<Product> productOpt = productRepo.findById(productId);
         String urlImage = "https://res.cloudinary.com/dzaopwmcj/image/upload/v1742655982/storeOttana/";
