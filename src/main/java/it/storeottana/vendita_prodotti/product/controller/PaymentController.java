@@ -15,7 +15,6 @@ import com.stripe.param.checkout.SessionCreateParams;
 import java.util.Optional;
 
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -29,9 +28,8 @@ public class PaymentController {
     @Autowired
     private ProductRepo productRepo;
 
-    @PostMapping("/checkout/{productId}")
-    public ResponseEntity<String> processPayment(@PathVariable Long productId
-                                                 /*@RequestBody Map<String, String> payload*/) {
+    @GetMapping("/checkout/{productId}")
+    public ResponseEntity<String> processPayment(@PathVariable Long productId) {
         Optional<Product> productOpt = productRepo.findById(productId);
         String urlImage = "https://res.cloudinary.com/dzaopwmcj/image/upload/v1742655982/storeOttana/";
 
