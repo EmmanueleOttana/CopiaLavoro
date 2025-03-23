@@ -1,0 +1,13 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/primosito
+    username: root
+    password: 151002
+  jpa:
+    database: mysql
+    show-sql: true
+    hibernate:
+      ddl-auto: update

@@ -1,13 +1,6 @@
 spring:
-  datasource:
-    url: jdbc:postgresql://dpg-cvcqpvij1k6c739fcfe0-a:5432/dbinserzioni
-    username: manu91
-    password: e4IXMM0DnnNgmDhFueslDHyZaPStkRhG
-  jpa:
-    database: postgresql
-    show-sql: true
-    hibernate:
-      ddl-auto: update
+  profiles:
+    active: prod
 
 directoryFile: C:\\Users\\manu9\\Desktop
 
