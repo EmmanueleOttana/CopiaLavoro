@@ -1,6 +1,6 @@
-package it.storeottana.vendita_prodotti.product.repository;
+package it.storeottana.vendita_prodotti.repositories;
 
-import it.storeottana.vendita_prodotti.product.entity.Product;
+import it.storeottana.vendita_prodotti.entities.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,8 +1,9 @@
-package it.storeottana.vendita_prodotti.product.service;
+package it.storeottana.vendita_prodotti.servicies;
 
-import it.storeottana.vendita_prodotti.product.entity.Product;
-import it.storeottana.vendita_prodotti.product.repository.ProductRepo;
+import it.storeottana.vendita_prodotti.entities.Product;
+import it.storeottana.vendita_prodotti.repositories.ProductRepo;
 import it.storeottana.vendita_prodotti.utils.FileStorageService;
+import it.storeottana.vendita_prodotti.utils.SmsService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -23,6 +24,8 @@ public class ProductService {
     private FileStorageService fileStorageService;
     @Autowired
     private ProductRepo productRepo;
+    @Autowired
+    private SmsService smsService;
 
     public List<String> upload(MultipartFile[] files) throws Exception {
         List<String> fileNames = new ArrayList<>();

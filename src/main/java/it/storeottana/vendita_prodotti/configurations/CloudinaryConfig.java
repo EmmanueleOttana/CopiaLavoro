@@ -1,4 +1,4 @@
-package it.storeottana.vendita_prodotti.utils;
+package it.storeottana.vendita_prodotti.configurations;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;

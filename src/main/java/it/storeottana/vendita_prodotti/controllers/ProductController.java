@@ -1,7 +1,7 @@
-package it.storeottana.vendita_prodotti.product.controller;
+package it.storeottana.vendita_prodotti.controllers;
 
-import it.storeottana.vendita_prodotti.product.entity.Product;
-import it.storeottana.vendita_prodotti.product.service.ProductService;
+import it.storeottana.vendita_prodotti.entities.Product;
+import it.storeottana.vendita_prodotti.servicies.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;

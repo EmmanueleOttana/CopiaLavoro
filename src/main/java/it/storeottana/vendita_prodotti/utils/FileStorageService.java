@@ -3,6 +3,7 @@ package it.storeottana.vendita_prodotti.utils;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.api.ApiResponse;
 import com.cloudinary.utils.ObjectUtils;
+import it.storeottana.vendita_prodotti.configurations.CloudinaryConfig;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;

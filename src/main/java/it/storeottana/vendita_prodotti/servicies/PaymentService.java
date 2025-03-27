@@ -1,9 +1,9 @@
-package it.storeottana.vendita_prodotti.product.service;
+package it.storeottana.vendita_prodotti.servicies;
 
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Charge;
-import it.storeottana.vendita_prodotti.product.entity.Product;
+import it.storeottana.vendita_prodotti.entities.Product;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 

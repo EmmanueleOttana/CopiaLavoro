@@ -1,10 +1,10 @@
-package it.storeottana.vendita_prodotti.product.controller;
+package it.storeottana.vendita_prodotti.controllers;
 
 import com.stripe.exception.StripeException;
-import it.storeottana.vendita_prodotti.product.entity.Product;
-import it.storeottana.vendita_prodotti.product.repository.ProductRepo;
-import it.storeottana.vendita_prodotti.product.service.ProductService;
-import it.storeottana.vendita_prodotti.product.service.PaymentService;
+import it.storeottana.vendita_prodotti.entities.Product;
+import it.storeottana.vendita_prodotti.repositories.ProductRepo;
+import it.storeottana.vendita_prodotti.servicies.ProductService;
+import it.storeottana.vendita_prodotti.servicies.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

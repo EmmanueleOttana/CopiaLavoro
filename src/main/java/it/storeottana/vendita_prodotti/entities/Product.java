@@ -1,4 +1,4 @@
-package it.storeottana.vendita_prodotti.product.entity;
+package it.storeottana.vendita_prodotti.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;

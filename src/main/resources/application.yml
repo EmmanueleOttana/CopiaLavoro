@@ -10,3 +10,9 @@ JWT:
 stripe:
   secret:
     key: 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
+
+bulkgate:
+  api:
+    url: https://portal.bulkgate.com/api/1.0/simple/transactional
+    application_id: 34487
+    application_token: vrIhIMxN2SzQuUXWVwEYMI25v6nfNv8PGfRCVAfFEbp8YvpHMZ
