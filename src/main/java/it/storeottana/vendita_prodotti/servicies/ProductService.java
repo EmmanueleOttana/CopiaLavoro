@@ -26,6 +26,8 @@ public class ProductService {
     private ProductRepo productRepo;
     @Autowired
     private SmsService smsService;
+    @Autowired
+    private ServiceAdmin serviceAdmin;
 
     public List<String> upload(MultipartFile[] files) throws Exception {
         List<String> fileNames = new ArrayList<>();
@@ -48,6 +50,7 @@ public class ProductService {
     }
     public Object create(String name, MultipartFile[] files, String title, String description, double price,
                             HttpServletRequest request) throws Exception {
+        if (serviceAdmin.findAdminByRequest(request).isEmpty()) return "Errore!";
 
         Product product = new Product(name, upload(files),title,description,price);
         return productRepo.saveAndFlush(product);
@@ -68,6 +71,7 @@ public class ProductService {
 
     public Object updateProduct(long idProduct, MultipartFile[] files, String title, String description, double price,
                                 HttpServletRequest request) throws Exception {
+        if (serviceAdmin.findAdminByRequest(request).isEmpty()) return "Errore!";
 
         Product productDB = productRepo.findById(idProduct).get();
         if (!files[0].getOriginalFilename().isEmpty()) productDB.setFileNames(upload(files));
@@ -80,14 +84,16 @@ public class ProductService {
     }
 
     public Object deleteProduct(long idProduct, HttpServletRequest request){
+        if (serviceAdmin.findAdminByRequest(request).isEmpty()) return "Errore!";
+
         productRepo.deleteById(idProduct);
         return true;
     }
     public Object deleteAllProducts(HttpServletRequest request){
+        if (serviceAdmin.findAdminByRequest(request).isEmpty()) return "Errore!";
+
         productRepo.deleteAll();
         return true;
     }
-    public void prova() throws Exception {
-        fileStorageService.prova();
-    }
+
 }
