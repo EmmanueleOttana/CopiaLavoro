@@ -60,8 +60,5 @@ public class FileStorageService {
     public String estraiNomeFile(String urlFile){
         return urlFile.substring(urlFile.lastIndexOf("/")+1);
     }
-    public void prova() throws Exception {
-        ApiResponse apiResponse = cloudinaryConfig.cloudinary().api().resourceByAssetID("e4c4ae04f65b1287dc5dda381503759c", ObjectUtils.emptyMap());
-        System.out.println(apiResponse);
-    }
+
 }
