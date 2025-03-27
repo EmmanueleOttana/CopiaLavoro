@@ -61,8 +61,4 @@ public class ProductController {
         return productService.deleteAllProducts(request);
     }
 
-    @GetMapping("/prova")
-    public void prova() throws Exception {
-        productService.prova();
-    }
 }
