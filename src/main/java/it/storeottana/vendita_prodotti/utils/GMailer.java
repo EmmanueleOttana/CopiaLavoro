@@ -1,5 +1,5 @@
-package Ecommerce.sito.utils;
-/*
+package it.storeottana.vendita_prodotti.utils;
+
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -67,7 +67,6 @@ public class GMailer {
         email.setSubject(subject);
         email.setText(message);
 
-
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         email.writeTo(buffer);
         byte[] rawMessageBytes = buffer.toByteArray();
@@ -91,4 +90,3 @@ public class GMailer {
 
 
 }
-*/

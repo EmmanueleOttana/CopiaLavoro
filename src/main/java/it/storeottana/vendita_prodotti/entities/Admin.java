@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -23,7 +24,19 @@ public class Admin {
     private String email;
     private String telephoneNumber;
     private String password;
-    private String Token;
-    private LocalDateTime timestampToken;
+    private String activationCode;
     private boolean isSuspended;
+    //private boolean isActive;
+    private String token;
+    private LocalDateTime timestampToken;
+
+    public Admin(String username, String email, String telephoneNumber,
+                 String password) {
+        this.username = username;
+        this.email = email;
+        this.telephoneNumber = telephoneNumber;
+        this.password = password;
+        this.activationCode = UUID.randomUUID().toString();
+        this.isSuspended = true;
+    }
 }

@@ -13,7 +13,7 @@ public class ControllerAccess {
     @Autowired
     private ServiceAccess serviceAccess;
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public Object loginAdmin(@RequestBody Access access, HttpServletResponse response) {
         return serviceAccess.login(access.getEmail(), access.getPassword(), response);
     }
