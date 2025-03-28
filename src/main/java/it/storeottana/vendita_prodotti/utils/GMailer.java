@@ -47,26 +47,32 @@ public class GMailer {
     }
 
     private static Credential getCredentials(final NetHttpTransport httpTransport, GsonFactory jsonFactory) throws IOException {
-        // Carica il file JSON dalle risorse
-        InputStream in = new ClassPathResource("client_secret_1050687576637-28qog4cum5u6iqh12f1di9n9pk4nig6k.apps.googleusercontent.com.json").getInputStream();
+        // Carica il client secret
+        GoogleClientSecrets clientSecrets =
+                GoogleClientSecrets.load(jsonFactory,
+                        new InputStreamReader(
+                                GMailer.class.getResourceAsStream("/client_secret_1050687576637-28qog4cum5u6iqh12f1di9n9pk4nig6k.apps.googleusercontent.com.json")));
 
-        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(jsonFactory, new InputStreamReader(in));
-
+        // Configura il flusso di autorizzazione
         GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
-                httpTransport, jsonFactory, clientSecrets, Set.of(GmailScopes.GMAIL_SEND))
+                httpTransport, jsonFactory, clientSecrets, Set.of(GMAIL_SEND))
                 .setDataStoreFactory(new FileDataStoreFactory(Paths.get("token").toFile()))
                 .setAccessType("offline")
                 .build();
 
-        // Usa il redirect URI corretto
+        // Crea il receiver locale con una porta fissa o dinamica
         LocalServerReceiver receiver = new LocalServerReceiver.Builder()
-                .setHost("venditaprodotti.onrender.com")  // Assicura che il dominio sia quello di produzione
-                .setPort(-1)  // Usa una porta dinamica, evita errori con porte fisse
-                .setCallbackPath("/Callback")  // Mantiene il percorso coerente con Google Cloud Console
+                .setHost("venditaprodotti.onrender.com")
+                .setPort(80)  // Usa una porta fissa (puoi anche scegliere -1 per una porta dinamica)
+                .setCallbackPath("/Callback")
                 .build();
 
-        return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
+        // Avvia l'autorizzazione e ottieni il codice di autorizzazione
+        AuthorizationCodeInstalledApp authApp = new AuthorizationCodeInstalledApp(flow, receiver);
+        return authApp.authorize("user");
     }
+
+
 
 
     public void sendMail(String destinatario, String subject, String message) throws Exception {
