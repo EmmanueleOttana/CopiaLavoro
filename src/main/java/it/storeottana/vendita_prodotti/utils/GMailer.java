@@ -47,7 +47,7 @@ public class GMailer {
         GoogleClientSecrets clientSecrets =
                 GoogleClientSecrets.load(jsonFactory,
                         new InputStreamReader(
-                                GMailer.class.getResourceAsStream("/client_secret_1050687576637-nos6lqttq139a4jc6hbb9v8g6septbq7.apps.googleusercontent.com.json")));
+                                GMailer.class.getResourceAsStream("/client_secret_1050687576637-viduqefvfbaln8pn8bcsppsgac5ocpe7.apps.googleusercontent.com.json")));
 
         GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
                 httpTransport, jsonFactory, clientSecrets, Set.of(GMAIL_SEND))
