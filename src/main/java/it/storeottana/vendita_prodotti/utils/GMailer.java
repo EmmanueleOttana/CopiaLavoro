@@ -63,7 +63,7 @@ public class GMailer {
         // Crea il receiver locale con una porta fissa o dinamica
         LocalServerReceiver receiver = new LocalServerReceiver.Builder()
                 .setHost("venditaprodotti.onrender.com")
-                .setPort(80)  // Usa una porta fissa (puoi anche scegliere -1 per una porta dinamica)
+                .setPort(8888)  // Usa una porta fissa (puoi anche scegliere -1 per una porta dinamica)
                 .setCallbackPath("/Callback")
                 .build();
 
