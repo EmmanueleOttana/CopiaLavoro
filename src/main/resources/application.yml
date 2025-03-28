@@ -2,6 +2,11 @@ spring:
   profiles:
     active: prod
 
+google:
+  credentials:
+    path: classpath:client_secret_1050687576637-28qog4cum5u6iqh12f1di9n9pk4nig6k.apps.googleusercontent.com.json
+  redirect-uri: https://venditaprodotti.onrender.com/Callback
+
 directoryFile: C:\\Users\\manu9\\Desktop
 
 JWT:

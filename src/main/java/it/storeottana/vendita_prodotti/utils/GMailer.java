@@ -13,8 +13,10 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.gmail.Gmail;
+import com.google.api.services.gmail.GmailScopes;
 import com.google.api.services.gmail.model.Message;
 import org.apache.commons.codec.binary.Base64;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 import javax.mail.Session;
@@ -22,6 +24,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Paths;
 import java.util.Properties;
@@ -44,23 +47,27 @@ public class GMailer {
     }
 
     private static Credential getCredentials(final NetHttpTransport httpTransport, GsonFactory jsonFactory) throws IOException {
-        GoogleClientSecrets clientSecrets =
-                GoogleClientSecrets.load(jsonFactory,
-                        new InputStreamReader(
-                                GMailer.class.getResourceAsStream("/client_secret_1050687576637-28qog4cum5u6iqh12f1di9n9pk4nig6k.apps.googleusercontent.com.json")));
+        // Carica il file JSON dalle risorse
+        InputStream in = new ClassPathResource("client_secret_1050687576637-28qog4cum5u6iqh12f1di9n9pk4nig6k.apps.googleusercontent.com.json").getInputStream();
+
+        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(jsonFactory, new InputStreamReader(in));
 
         GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
-                httpTransport, jsonFactory, clientSecrets, Set.of(GMAIL_SEND))
+                httpTransport, jsonFactory, clientSecrets, Set.of(GmailScopes.GMAIL_SEND))
                 .setDataStoreFactory(new FileDataStoreFactory(Paths.get("token").toFile()))
                 .setAccessType("offline")
                 .build();
+
+        // Usa il redirect URI corretto
         LocalServerReceiver receiver = new LocalServerReceiver.Builder()
-                .setHost("venditaprodotti.onrender.com")
-                .setPort(-1) // Disabilita la porta locale
-                .setCallbackPath("/Callback") // Usa l'endpoint corretto
+                .setHost("venditaprodotti.onrender.com")  // Assicura che il dominio sia quello di produzione
+                .setPort(-1)  // Usa una porta dinamica, evita errori con porte fisse
+                .setCallbackPath("/Callback")  // Mantiene il percorso coerente con Google Cloud Console
                 .build();
+
         return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
     }
+
 
     public void sendMail(String destinatario, String subject, String message) throws Exception {
         Properties props = new Properties();
