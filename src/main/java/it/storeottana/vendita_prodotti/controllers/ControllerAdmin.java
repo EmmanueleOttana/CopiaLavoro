@@ -10,36 +10,35 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin")
 public class ControllerAdmin {
     @Autowired
-    private ServiceAdmin workersService;
+    private ServiceAdmin serviceAdmin;
 
     @PostMapping("/registration")
     public String registrationWorkers(@RequestBody Admin admin) throws Exception {
-        return workersService.registration(admin);
+        return serviceAdmin.registration(admin);
     }
     @GetMapping("/activeAccount/{id}/{activationCode}")
     public String activeAccount(@PathVariable long id, @PathVariable String activationCode){
-        return workersService.activeAccount(id, activationCode);
+        return serviceAdmin.activeAccount(id, activationCode);
     }
     @GetMapping("/myProfile")
     public Object getMyProfile(HttpServletRequest request){
-        return workersService.getMyProfile(request);
+        return serviceAdmin.getMyProfile(request);
     }
-
     @PatchMapping("/updateEmail")
     public String updateEmail(HttpServletRequest request, @RequestParam String newEmail){
-        return workersService.updateEmail(request, newEmail);
+        return serviceAdmin.updateEmail(request, newEmail);
     }
     @PatchMapping("/newEmail/{id}/{newEmail}")
     public String acceptNewEmail(@PathVariable long id, @PathVariable String newEmail){
-        return workersService.acceptNewEmail(id, newEmail);
+        return serviceAdmin.acceptNewEmail(id, newEmail);
     }
     @PatchMapping("/updTelNum")
     public String updateTelephoneNum(HttpServletRequest request, @RequestParam String telephoneNumber) throws Exception {
-        return workersService.updateTelephoneNumber(request, telephoneNumber);
+        return serviceAdmin.updateTelephoneNumber(request, telephoneNumber);
     }
     @PatchMapping("/newTelNum/{id}/{newEmail}")
     public Object acceptTelephoneNum(@PathVariable long id, @PathVariable String telephoneNumber){
-        return workersService.acceptNewTelephoneNumber(id, telephoneNumber);
+        return serviceAdmin.acceptNewTelephoneNumber(id, telephoneNumber);
     }
     /*
     @PatchMapping("/acceptance/{idWorker}")

@@ -1,6 +1,10 @@
 spring:
   profiles:
-    active: prod
+    active: dev
+
+sendgrid:
+  api:
+    key: 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
 
 google:
   credentials:

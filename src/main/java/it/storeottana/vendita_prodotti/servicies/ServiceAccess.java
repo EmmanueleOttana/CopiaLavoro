@@ -4,7 +4,7 @@ import it.storeottana.vendita_prodotti.entities.Admin;
 import it.storeottana.vendita_prodotti.repositories.RepoAdmin;
 import it.storeottana.vendita_prodotti.security.EncryptionPw;
 import it.storeottana.vendita_prodotti.security.TokenJWT;
-import it.storeottana.vendita_prodotti.utils.GMailer;
+import it.storeottana.vendita_prodotti.utils.EmailService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ public class ServiceAccess {
     @Autowired
     private RepoAdmin repoAdmin;
     @Autowired
-    private GMailer postman;
+    private EmailService postman;
 
     public Object login(String email, String password, HttpServletResponse response) {
         Optional <Admin> admin = repoAdmin.findByEmail(email);

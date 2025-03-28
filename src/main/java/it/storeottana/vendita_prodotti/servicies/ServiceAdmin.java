@@ -4,7 +4,7 @@ import it.storeottana.vendita_prodotti.entities.Admin;
 import it.storeottana.vendita_prodotti.repositories.RepoAdmin;
 import it.storeottana.vendita_prodotti.security.EncryptionPw;
 import it.storeottana.vendita_prodotti.security.TokenJWT;
-import it.storeottana.vendita_prodotti.utils.GMailer;
+import it.storeottana.vendita_prodotti.utils.EmailService;
 import it.storeottana.vendita_prodotti.utils.SmsService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ public class ServiceAdmin {
     @Autowired
     private RepoAdmin repoAdmin;
     @Autowired
-    private GMailer postman;
+    private EmailService postman;
     @Autowired
     private SmsService smsService;
 
