@@ -54,7 +54,11 @@ public class GMailer {
                 .setDataStoreFactory(new FileDataStoreFactory(Paths.get("token").toFile()))
                 .setAccessType("offline")
                 .build();
-        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
+        LocalServerReceiver receiver = new LocalServerReceiver.Builder()
+                .setHost("venditaprodotti.onrender.com")
+                .setPort(-1) // Disabilita la porta locale
+                .setCallbackPath("/Callback") // Usa l'endpoint corretto
+                .build();
         return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
     }
 
