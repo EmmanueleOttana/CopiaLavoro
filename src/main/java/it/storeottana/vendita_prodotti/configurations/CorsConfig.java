@@ -13,7 +13,7 @@ public class CorsConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**") // tutte le rotte
+                registry.addMapping("/**")
                         .allowedOrigins(
                                 "http://127.0.0.1:5500",
                                 "http://localhost:3000",
@@ -22,8 +22,9 @@ public class CorsConfig {
                                 "http://storeottana.it",
                                 "https://storeottana.it"
                         )
-                        .allowedMethods("GET", "POST", "PUT", "DELETE") // specifica i metodi che usi
-                        .allowedHeaders("*"); // consenti tutti gli headers
+                        .allowedMethods("GET", "POST", "PUT", "DELETE")
+                        .allowedHeaders("*")
+                        .allowCredentials(true); // Permetti credenziali, se necessario
             }
         };
     }
