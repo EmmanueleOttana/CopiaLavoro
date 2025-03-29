@@ -16,7 +16,7 @@ public class ControllerAdmin {
     private ServiceAdmin serviceAdmin;
 
     @PostMapping("/registration")
-    public String registrationWorkers(@RequestBody Admin admin, @RequestBody String authCode) throws Exception {
+    public String registrationWorkers(@RequestBody Admin admin, @RequestParam String authCode) throws Exception {
         return serviceAdmin.registration(admin, authCode);
     }
     @PatchMapping("/activeAccount/{id}/{activationCode}")
@@ -48,11 +48,11 @@ public class ControllerAdmin {
     public Object acceptTelephoneNum(@PathVariable long id, @PathVariable String telephoneNumber){
         return serviceAdmin.acceptNewTelephoneNumber(id, telephoneNumber);
     }
-    @GetMapping
+    @GetMapping("/getAll")
     public List<Admin> getAll(){
         return serviceAdmin.getAll();
     }
-    @DeleteMapping
+    @DeleteMapping("/delete/{id}")
     public boolean deleteAdmin(@PathVariable long id){
         return serviceAdmin.deleteAdmin(id);
     }
