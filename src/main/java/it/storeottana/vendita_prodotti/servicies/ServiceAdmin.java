@@ -1,5 +1,6 @@
 package it.storeottana.vendita_prodotti.servicies;
 
+import it.storeottana.vendita_prodotti.dto.AdminRequest;
 import it.storeottana.vendita_prodotti.entities.Admin;
 import it.storeottana.vendita_prodotti.repositories.RepoAdmin;
 import it.storeottana.vendita_prodotti.security.EncryptionPw;
@@ -31,11 +32,11 @@ public class ServiceAdmin {
     @Value("${companyEmail}")
     private String companyEmail;
 
-    public String registration(Admin admin, String authCode) throws Exception {
-        if (!authCode.equals(this.authCode)) return "Richiesta inviata! Attendi che ti venga consentito l'accesso.";
+    public String registration(AdminRequest adminRequest) throws Exception {
+        if (!adminRequest.getAuthCode().equals(this.authCode)) return "Richiesta inviata! Attendi che ti venga consentito l'accesso.";
 
-        Admin adminNew = new Admin(admin.getUsername(), admin.getEmail(),
-                admin.getTelephoneNumber(), EncryptionPw.hashPassword(admin.getPassword()));
+        Admin adminNew = new Admin(adminRequest.getUsername(), adminRequest.getEmail(),
+                adminRequest.getTelephoneNumber(), EncryptionPw.hashPassword(adminRequest.getPassword()));
         repoAdmin.saveAndFlush(adminNew);
 
         this.postman.sendMail(adminNew.getEmail(),"Attivazione account",

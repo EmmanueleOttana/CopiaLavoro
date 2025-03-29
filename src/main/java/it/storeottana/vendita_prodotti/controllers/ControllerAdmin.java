@@ -1,5 +1,6 @@
 package it.storeottana.vendita_prodotti.controllers;
 
+import it.storeottana.vendita_prodotti.dto.AdminRequest;
 import it.storeottana.vendita_prodotti.entities.Admin;
 import it.storeottana.vendita_prodotti.servicies.ServiceAdmin;
 import jakarta.servlet.http.HttpServletRequest;
@@ -7,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/admin")
@@ -16,8 +16,8 @@ public class ControllerAdmin {
     private ServiceAdmin serviceAdmin;
 
     @PostMapping("/registration")
-    public String registrationWorkers(@RequestBody Admin admin, @RequestParam String authCode) throws Exception {
-        return serviceAdmin.registration(admin, authCode);
+    public String registrationWorkers(@RequestBody AdminRequest adminRequest) throws Exception {
+        return serviceAdmin.registration(adminRequest);
     }
     @PatchMapping("/activeAccount/{id}/{activationCode}")
     public String activeAccount(@PathVariable long id, @PathVariable String activationCode){
