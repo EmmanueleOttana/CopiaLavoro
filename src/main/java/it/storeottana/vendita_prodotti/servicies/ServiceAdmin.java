@@ -8,8 +8,10 @@ import it.storeottana.vendita_prodotti.utils.EmailService;
 import it.storeottana.vendita_prodotti.utils.SmsService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -22,16 +24,23 @@ public class ServiceAdmin {
     private EmailService postman;
     @Autowired
     private SmsService smsService;
+    @Value("${authCode}")
+    private String authCode;
+    @Value("${urlBackend}")
+    private String urlBackend;
+    @Value("${companyEmail}")
+    private String companyEmail;
 
-    public String registration(Admin admin) throws Exception {
+    public String registration(Admin admin, String authCode) throws Exception {
+        if (!authCode.equals(this.authCode)) return "Richiesta inviata! Attendi che ti venga consentito l'accesso.";
 
         Admin adminNew = new Admin(admin.getUsername(), admin.getEmail(),
                 admin.getTelephoneNumber(), EncryptionPw.hashPassword(admin.getPassword()));
         repoAdmin.saveAndFlush(adminNew);
 
         this.postman.sendMail(adminNew.getEmail(),"Attivazione account",
-                "Per attivare l'account cliccare nel link a seguire:\n" +
-                "http://localhost:8080/admin/activeAccount/"+adminNew.getId()+"/"+adminNew.getActivationCode());
+                "Per inviare la richiesta d'attivazione dell'account cliccare nel link a seguire:\n" +
+                        urlBackend+"/admin/activeAccount/"+adminNew.getId()+"/"+adminNew.getActivationCode());
 
         return "L'utente "+ adminNew.getUsername() + " è stato creato con successo!" +
                 "\nConfermare l'indirizzo email per attivarlo";
@@ -44,14 +53,25 @@ public class ServiceAdmin {
         Admin admin = admin1.get();
         if (admin.getActivationCode().equals(activationCode)){
             admin.setActivationCode(null);
-
             repoAdmin.saveAndFlush(admin);
+
+            this.postman.sendMail(companyEmail,"Richiesta d'attivazione account",
+                    "Per attivare l'account di "+admin.getUsername()+" cliccare nel link a seguire:\n" +
+                            urlBackend+"/admin/acceptance/"+admin.getId());
+
             return "Registrazione effettuata con successo!";
         }else {
             return "Impossibile attivare account.";
         }
     }
-
+    public boolean acceptanceWorker(long id){
+        Optional<Admin> adminDB = repoAdmin.findById(id);
+        if (adminDB.isPresent()){
+            adminDB.get().setActive(true);
+            repoAdmin.saveAndFlush(adminDB.get());
+            return true;
+        }else return false;
+    }
     public Object getMyProfile(HttpServletRequest request){
         Optional <Admin> adminJwt = findAdminByRequest(request);
         if (adminJwt.isPresent()) {
@@ -111,5 +131,14 @@ public class ServiceAdmin {
 
     public Optional <Admin> findAdminByRequest(HttpServletRequest request){
         return repoAdmin.findByUsername(tokenJWT.getUsername(request.getHeader("Token")));
+    }
+
+    public List<Admin> getAll() {
+        return repoAdmin.findAll();
+    }
+
+    public boolean deleteAdmin(long id) {
+        repoAdmin.deleteById(id);
+        return true;
     }
 }

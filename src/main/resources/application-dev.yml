@@ -11,3 +11,6 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
+
+urlBackend: http://localhost:8080
+directoryFile: C:\\Users\\manu9\\Desktop

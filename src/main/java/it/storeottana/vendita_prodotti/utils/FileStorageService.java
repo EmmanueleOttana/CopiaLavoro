@@ -19,6 +19,7 @@ import java.util.UUID;
 
 @Component
 public class FileStorageService {
+
     @Value("${directoryFile}")
     private String directory;
     @Autowired

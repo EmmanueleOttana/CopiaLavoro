@@ -6,6 +6,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/admin")
 public class ControllerAdmin {
@@ -13,13 +16,18 @@ public class ControllerAdmin {
     private ServiceAdmin serviceAdmin;
 
     @PostMapping("/registration")
-    public String registrationWorkers(@RequestBody Admin admin) throws Exception {
-        return serviceAdmin.registration(admin);
+    public String registrationWorkers(@RequestBody Admin admin, @RequestBody String authCode) throws Exception {
+        return serviceAdmin.registration(admin, authCode);
     }
-    @GetMapping("/activeAccount/{id}/{activationCode}")
+    @PatchMapping("/activeAccount/{id}/{activationCode}")
     public String activeAccount(@PathVariable long id, @PathVariable String activationCode){
         return serviceAdmin.activeAccount(id, activationCode);
     }
+    @PatchMapping("/acceptance/{id}")
+    public boolean acceptanceWorker(@PathVariable long id){
+        return serviceAdmin.acceptanceWorker(id);
+    }
+
     @GetMapping("/myProfile")
     public Object getMyProfile(HttpServletRequest request){
         return serviceAdmin.getMyProfile(request);
@@ -40,10 +48,12 @@ public class ControllerAdmin {
     public Object acceptTelephoneNum(@PathVariable long id, @PathVariable String telephoneNumber){
         return serviceAdmin.acceptNewTelephoneNumber(id, telephoneNumber);
     }
-    /*
-    @PatchMapping("/acceptance/{idWorker}")
-    public boolean acceptanceWorker(@PathVariable long idWorker){
-        return workersService.acceptanceWorker(idWorker);
+    @GetMapping
+    public List<Admin> getAll(){
+        return serviceAdmin.getAll();
     }
-     */
+    @DeleteMapping
+    public boolean deleteAdmin(@PathVariable long id){
+        return serviceAdmin.deleteAdmin(id);
+    }
 }

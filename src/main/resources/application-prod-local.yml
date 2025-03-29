@@ -8,3 +8,6 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
+
+urlBackend: https://venditaprodotti.onrender.com
+directoryFile: C:\\Users\\manu9\\Desktop

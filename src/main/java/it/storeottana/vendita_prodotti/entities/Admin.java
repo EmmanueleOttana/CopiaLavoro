@@ -1,9 +1,6 @@
 package it.storeottana.vendita_prodotti.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,15 +15,20 @@ import java.util.UUID;
 public class Admin {
 
     @Id
+    @Column(nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @Column(unique = true, nullable = false)
     private String username;
+    @Column(unique = true, nullable = false)
     private String email;
+    @Column(unique = true, nullable = false)
     private String telephoneNumber;
+    @Column(nullable = false)
     private String password;
     private String activationCode;
     private boolean isSuspended;
-    //private boolean isActive;
+    private boolean isActive;
     private String token;
     private LocalDateTime timestampToken;
 
@@ -37,6 +39,7 @@ public class Admin {
         this.telephoneNumber = telephoneNumber;
         this.password = password;
         this.activationCode = UUID.randomUUID().toString();
+        this.isActive = false;
         this.isSuspended = true;
     }
 }
