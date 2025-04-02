@@ -36,22 +36,26 @@ public class CartService {
     }
 
     public String addCart(long idProduct, int quantity, HttpServletRequest request, HttpServletResponse response) {
-        Optional <Product> productR = productRepo.findById(idProduct);
+        Optional<Product> productR = productRepo.findById(idProduct);
         if (productR.isEmpty()) return "Errore di comunicazione!";
 
         String token = getTokenFromCookie(request);
-        Optional <Cart> cartR = cartRepo.findByUsername(tokenJWT.getUsername(token));
-        if (cartR.isEmpty()){
-            Cart cart = new Cart();
-            cart.setUsername(tokenJWT.guestUsername());
-            cart.setToken(tokenJWT.getToken(cart.getUsername()));
+        String username = token != null ? tokenJWT.getUsername(token) : tokenJWT.guestUsername();
 
+        Cart cart = cartRepo.findByUsername(username).orElseGet(() -> {
+            Cart newCart = new Cart();
+            newCart.setUsername(username);
+            newCart.setToken(tokenJWT.getToken(username));
+            return newCart;
+        });
+
+        if (!isFoundProduct(cart, productR.get())) {
             addProducts(cart, productR.get(), quantity);
-            addTokenToCookie(response, cart.getToken());
-        }else{
-            Cart cart = cartR.get();
-            if ( !isFoundProduct(cart, productR.get()) ) addProducts(cart, productR.get(), quantity);
         }
+
+        // Assicura che il token sia sempre aggiornato nel cookie
+        addTokenToCookie(response, cart.getToken());
+
         return "Prodotto aggiunto!";
     }
 

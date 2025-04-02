@@ -14,4 +14,3 @@ public class ShippingData {
     private String province;
     private int zipcode;
 }
-
