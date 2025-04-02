@@ -2,7 +2,7 @@ package it.storeottana.vendita_prodotti.controllers;
 
 import it.storeottana.vendita_prodotti.dto.AdminRequest;
 import it.storeottana.vendita_prodotti.entities.Admin;
-import it.storeottana.vendita_prodotti.servicies.ServiceAdmin;
+import it.storeottana.vendita_prodotti.servicies.AdminService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -11,49 +11,49 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/admin")
-public class ControllerAdmin {
+public class AdminController {
     @Autowired
-    private ServiceAdmin serviceAdmin;
+    private AdminService adminService;
 
     @PostMapping("/registration")
     public String registrationWorkers(@RequestBody AdminRequest adminRequest) throws Exception {
-        return serviceAdmin.registration(adminRequest);
+        return adminService.registration(adminRequest);
     }
     @PatchMapping("/activeAccount/{id}/{activationCode}")
     public String activeAccount(@PathVariable long id, @PathVariable String activationCode){
-        return serviceAdmin.activeAccount(id, activationCode);
+        return adminService.activeAccount(id, activationCode);
     }
     @PatchMapping("/acceptance/{id}")
     public boolean acceptanceWorker(@PathVariable long id){
-        return serviceAdmin.acceptanceWorker(id);
+        return adminService.acceptanceWorker(id);
     }
 
     @GetMapping("/myProfile")
     public Object getMyProfile(HttpServletRequest request){
-        return serviceAdmin.getMyProfile(request);
+        return adminService.getMyProfile(request);
     }
     @PatchMapping("/updateEmail")
     public String updateEmail(HttpServletRequest request, @RequestParam String newEmail){
-        return serviceAdmin.updateEmail(request, newEmail);
+        return adminService.updateEmail(request, newEmail);
     }
     @PatchMapping("/newEmail/{id}/{newEmail}")
     public String acceptNewEmail(@PathVariable long id, @PathVariable String newEmail){
-        return serviceAdmin.acceptNewEmail(id, newEmail);
+        return adminService.acceptNewEmail(id, newEmail);
     }
     @PatchMapping("/updTelNum")
     public String updateTelephoneNum(HttpServletRequest request, @RequestParam String telephoneNumber) throws Exception {
-        return serviceAdmin.updateTelephoneNumber(request, telephoneNumber);
+        return adminService.updateTelephoneNumber(request, telephoneNumber);
     }
     @PatchMapping("/newTelNum/{id}/{newEmail}")
     public Object acceptTelephoneNum(@PathVariable long id, @PathVariable String telephoneNumber){
-        return serviceAdmin.acceptNewTelephoneNumber(id, telephoneNumber);
+        return adminService.acceptNewTelephoneNumber(id, telephoneNumber);
     }
     @GetMapping("/getAll")
     public List<Admin> getAll(){
-        return serviceAdmin.getAll();
+        return adminService.getAll();
     }
     @DeleteMapping("/delete/{id}")
     public boolean deleteAdmin(@PathVariable long id){
-        return serviceAdmin.deleteAdmin(id);
+        return adminService.deleteAdmin(id);
     }
 }
