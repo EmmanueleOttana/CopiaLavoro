@@ -2,7 +2,7 @@ package it.storeottana.vendita_prodotti.servicies;
 
 import it.storeottana.vendita_prodotti.dto.AdminRequest;
 import it.storeottana.vendita_prodotti.entities.Admin;
-import it.storeottana.vendita_prodotti.repositories.RepoAdmin;
+import it.storeottana.vendita_prodotti.repositories.AdminRepo;
 import it.storeottana.vendita_prodotti.security.EncryptionPw;
 import it.storeottana.vendita_prodotti.security.TokenJWT;
 import it.storeottana.vendita_prodotti.utils.EmailService;
@@ -16,11 +16,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ServiceAdmin {
+public class AdminService {
     @Autowired
     private TokenJWT tokenJWT;
     @Autowired
-    private RepoAdmin repoAdmin;
+    private AdminRepo adminRepo;
     @Autowired
     private EmailService postman;
     @Autowired
@@ -37,7 +37,7 @@ public class ServiceAdmin {
 
         Admin adminNew = new Admin(adminRequest.getUsername(), adminRequest.getEmail(),
                 adminRequest.getTelephoneNumber(), EncryptionPw.hashPassword(adminRequest.getPassword()));
-        repoAdmin.saveAndFlush(adminNew);
+        adminRepo.saveAndFlush(adminNew);
 
         this.postman.sendMail(adminNew.getEmail(),"Attivazione account",
                 "Per inviare la richiesta d'attivazione dell'account cliccare nel link a seguire:\n" +
@@ -48,13 +48,13 @@ public class ServiceAdmin {
     }
 
     public String activeAccount(long id, String activationCode){
-        Optional <Admin> admin1 = repoAdmin.findById(id);
+        Optional <Admin> admin1 = adminRepo.findById(id);
         if (admin1.isEmpty()) return "Errore comunicazione";
 
         Admin admin = admin1.get();
         if (admin.getActivationCode().equals(activationCode)){
             admin.setActivationCode(null);
-            repoAdmin.saveAndFlush(admin);
+            adminRepo.saveAndFlush(admin);
 
             this.postman.sendMail(companyEmail,"Richiesta d'attivazione account",
                     "Per attivare l'account di "+admin.getUsername()+" cliccare nel link a seguire:\n" +
@@ -66,10 +66,10 @@ public class ServiceAdmin {
         }
     }
     public boolean acceptanceWorker(long id){
-        Optional<Admin> adminDB = repoAdmin.findById(id);
+        Optional<Admin> adminDB = adminRepo.findById(id);
         if (adminDB.isPresent()){
             adminDB.get().setActive(true);
-            repoAdmin.saveAndFlush(adminDB.get());
+            adminRepo.saveAndFlush(adminDB.get());
             return true;
         }else return false;
     }
@@ -96,12 +96,12 @@ public class ServiceAdmin {
     }
 
     public String acceptNewEmail(long id, String newEmail) {
-        Optional <Admin> adminJwt = repoAdmin.findById(id);
+        Optional <Admin> adminJwt = adminRepo.findById(id);
         if (adminJwt.isEmpty()) return "Errore comunicazione";
 
         Admin admin = adminJwt.get();
         admin.setEmail(newEmail);
-        repoAdmin.saveAndFlush(admin);
+        adminRepo.saveAndFlush(admin);
 
         return "Email modificata con successo!";
     }
@@ -122,24 +122,24 @@ public class ServiceAdmin {
     }
 
     public Object acceptNewTelephoneNumber(long id, String newTelephoneNumber) {
-        Optional <Admin> adminJwt = repoAdmin.findById(id);
+        Optional <Admin> adminJwt = adminRepo.findById(id);
         if (adminJwt.isEmpty()) return "Errore comunicazione";
 
         Admin admin = adminJwt.get();
         admin.setTelephoneNumber(newTelephoneNumber);
-        return repoAdmin.saveAndFlush(admin);
+        return adminRepo.saveAndFlush(admin);
     }
 
     public Optional <Admin> findAdminByRequest(HttpServletRequest request){
-        return repoAdmin.findByUsername(tokenJWT.getUsername(request.getHeader("Token")));
+        return adminRepo.findByUsername(tokenJWT.getUsername(request.getHeader("Token")));
     }
 
     public List<Admin> getAll() {
-        return repoAdmin.findAll();
+        return adminRepo.findAll();
     }
 
     public boolean deleteAdmin(long id) {
-        repoAdmin.deleteById(id);
+        adminRepo.deleteById(id);
         return true;
     }
 }

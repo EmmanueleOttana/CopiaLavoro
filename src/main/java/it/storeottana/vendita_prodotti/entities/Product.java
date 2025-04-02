@@ -2,6 +2,7 @@ package it.storeottana.vendita_prodotti.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @Data
+@EqualsAndHashCode
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -23,6 +25,9 @@ public class Product {
     private String description;
     @Column(nullable = false)
     private double price;
+    //@JoinColumn(name = "product_id")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List <Feedback> feedback;
 
     public Product(String name, List<String> fileNames, String title,
                    String description, double price) {
@@ -32,4 +37,8 @@ public class Product {
         this.description = description;
         this.price = price;
     }
+    public void addFeedback(Feedback feedback) {
+        this.feedback.add(feedback);
+    }
+
 }

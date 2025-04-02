@@ -1,4 +1,4 @@
-package it.storeottana.vendita_prodotti.entities;
+package it.storeottana.vendita_prodotti.dto;
 
 import lombok.Data;
 
