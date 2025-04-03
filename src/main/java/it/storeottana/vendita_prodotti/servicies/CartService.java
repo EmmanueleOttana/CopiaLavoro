@@ -132,10 +132,11 @@ public class CartService {
     }
     public void addTokenToCookie(HttpServletResponse response, String token) {
         Cookie cookie = new Cookie("guest777token", token);
-        cookie.setHttpOnly(true);  // Impedisce l'accesso da JavaScript per sicurezza
+        //cookie.setHttpOnly(true);  // Impedisce l'accesso da JavaScript per sicurezza
         cookie.setPath("/");       // Il cookie è accessibile da tutto il sito
         cookie.setMaxAge(60 * 60 * 24 * 6); // Valido per 6 giorni
-        cookie.setSecure(true);// Il cookie sarà inviato solo su connessioni HTTPS
+        //cookie.setSecure(true);// Il cookie sarà inviato solo su connessioni HTTPS
+        cookie.setDomain(".storeottana.it");
         response.addCookie(cookie); // Aggiunge il cookie alla risposta
     }
     public String getTokenFromCookie(HttpServletRequest request){

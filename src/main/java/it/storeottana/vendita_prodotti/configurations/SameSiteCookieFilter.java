@@ -37,7 +37,7 @@ public class SameSiteCookieFilter implements Filter {
                     }
                     // Aggiungi SameSite se non presente
                     if (!header.toLowerCase().contains("samesite")) {
-                        newHeader.append("; SameSite=").append(SAME_SITE_VALUE);
+                        newHeader.append("; SameSite=").append("None");
                     }
                     // Aggiungi il cookie modificato all'header della risposta
                     res.addHeader("Set-Cookie", newHeader.toString());
