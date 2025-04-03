@@ -136,7 +136,7 @@ public class CartService {
         cookie.setPath("/");       // Il cookie è accessibile da tutto il sito
         cookie.setMaxAge(60 * 60 * 24 * 6); // Valido per 6 giorni
         //cookie.setSecure(true);// Il cookie sarà inviato solo su connessioni HTTPS
-        cookie.setDomain(".storeottana.it");
+        //cookie.setDomain(".storeottana.it");
         response.addCookie(cookie); // Aggiunge il cookie alla risposta
     }
     public String getTokenFromCookie(HttpServletRequest request){
