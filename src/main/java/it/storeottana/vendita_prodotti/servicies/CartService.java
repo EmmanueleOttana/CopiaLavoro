@@ -17,6 +17,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import java.time.LocalDateTime;
 
 import java.util.*;
+import org.springframework.http.ResponseCookie;
 
 @Service
 public class CartService {
@@ -131,13 +132,15 @@ public class CartService {
         return "Errore comunicazione!";
     }
     public void addTokenToCookie(HttpServletResponse response, String token) {
-        Cookie cookie = new Cookie("guest777token", token);
-        //cookie.setHttpOnly(true);  // Impedisce l'accesso da JavaScript per sicurezza
-        cookie.setPath("/");       // Il cookie è accessibile da tutto il sito
-        cookie.setMaxAge(60 * 60 * 24 * 6); // Valido per 6 giorni
-        //cookie.setSecure(true);// Il cookie sarà inviato solo su connessioni HTTPS
-        //cookie.setDomain(".storeottana.it");
-        response.addCookie(cookie); // Aggiunge il cookie alla risposta
+        ResponseCookie cookie = ResponseCookie.from("guest777token", token)
+                .path("/")
+                .maxAge(60 * 60 * 24 * 6) // 6 giorni
+                .secure(true)   // Il cookie sarà inviato solo su HTTPS
+                .httpOnly(true) // Impedisce accesso JS
+                .sameSite("None") // Permette l'invio cross-site
+                .build();
+
+        response.addHeader("Set-Cookie", cookie.toString());
     }
     public String getTokenFromCookie(HttpServletRequest request){
         Cookie[] cookies = request.getCookies();
