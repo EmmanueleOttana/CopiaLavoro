@@ -135,7 +135,7 @@ public class CartService {
         cookie.setHttpOnly(true);  // Impedisce l'accesso da JavaScript per sicurezza
         cookie.setPath("/");       // Il cookie è accessibile da tutto il sito
         cookie.setMaxAge(60 * 60 * 24 * 6); // Valido per 6 giorni
-        cookie.setSecure(false); // Il cookie sarà inviato solo su connessioni HTTPS
+        cookie.setSecure(true);// Il cookie sarà inviato solo su connessioni HTTPS
         response.addCookie(cookie); // Aggiunge il cookie alla risposta
     }
     public String getTokenFromCookie(HttpServletRequest request){
