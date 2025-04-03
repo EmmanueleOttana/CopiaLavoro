@@ -89,7 +89,7 @@ public class CartService {
     }
     public Object getCart(HttpServletRequest request){
         String token = getTokenFromCookie(request);
-        if (token == null) return "Carrello vuoto!";
+        if (token == null) return "Carrello non trovato!";
 
         Optional <Cart> cartR = cartRepo.findByUsername(tokenJWT.getUsername(token));
         if (cartR.isEmpty()) return "Carrello vuoto!";
