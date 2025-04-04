@@ -36,8 +36,8 @@ public class CartController {
     public Object changeDeliveryMethod(HttpServletRequest request, @RequestParam DeliveryMethods deliveryMethods){
         return cartService.changeDeliveryMethod(request, deliveryMethods);
     }
-    @PatchMapping("/{idProduct}/{quantity}")
-    public Object changeQuantities(@PathVariable long idProduct, @PathVariable int quantity,
+    @PatchMapping("/updateQuantity")
+    public Object changeQuantities(@RequestParam long idProduct, @RequestParam int quantity,
                                        HttpServletRequest request){
         return cartService.changeQuantities(idProduct, quantity, request);
     }
