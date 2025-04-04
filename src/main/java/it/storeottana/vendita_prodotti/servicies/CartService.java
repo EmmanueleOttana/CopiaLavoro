@@ -131,6 +131,20 @@ public class CartService {
         }
         return "Errore comunicazione!";
     }
+    public Object changeQuantities(long idProduct, int quantity, HttpServletRequest request) {
+        String token = getTokenFromCookie(request);
+        Optional <Cart> cartR = cartRepo.findByUsername(tokenJWT.getUsername(token));
+        Optional <Product> productR = productRepo.findById(idProduct);
+
+        if (cartR.isPresent() && productR.isPresent()) {
+            cartR.get().getProductsInCart().stream()
+                    .filter(pc -> pc.getProduct().equals(productR.get()))
+                    .forEach(pc -> pc.setQuantity(quantity));
+            updateCart(cartR.get());
+            return cartRepo.saveAndFlush(cartR.get());
+        }
+        return "Errore comunicazione!";
+    }
     public void addTokenToCookie(HttpServletResponse response, String token) {
         ResponseCookie cookie = ResponseCookie.from("guest777token", token)
                 .path("/")
@@ -155,5 +169,4 @@ public class CartService {
         }
         return token;
     }
-
 }
