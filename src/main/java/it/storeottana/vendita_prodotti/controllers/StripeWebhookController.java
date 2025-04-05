@@ -2,7 +2,7 @@ package it.storeottana.vendita_prodotti.controllers;
 
 import it.storeottana.vendita_prodotti.repositories.CartRepo;
 import it.storeottana.vendita_prodotti.repositories.OrderRepo;
-import it.storeottana.vendita_prodotti.servicies.OrderService;
+import it.storeottana.vendita_prodotti.servicies.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,18 +12,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("/webhooks/stripe")
+@RequestMapping("/stripe")
 public class StripeWebhookController {
 
     @Autowired
     private OrderRepo orderRepo;
     @Autowired
-    private OrderService orderService;
+    private PaymentService paymentService;
     @Autowired
     private CartRepo cartRepo;
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<String> handleStripeWebhook(HttpServletRequest request) {
-        return orderService.checkout(request);
+        return paymentService.checkout(request);
     }
 }

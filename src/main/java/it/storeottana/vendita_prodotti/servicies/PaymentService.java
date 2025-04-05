@@ -1,37 +1,55 @@
 package it.storeottana.vendita_prodotti.servicies;
 
 import com.stripe.Stripe;
+import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Charge;
+import com.stripe.model.Event;
 import com.stripe.model.checkout.Session;
+import com.stripe.net.Webhook;
 import com.stripe.param.checkout.SessionCreateParams;
 import it.storeottana.vendita_prodotti.entities.Cart;
+import it.storeottana.vendita_prodotti.entities.Order;
 import it.storeottana.vendita_prodotti.entities.Product;
 import it.storeottana.vendita_prodotti.entities.ProductInCart;
 import it.storeottana.vendita_prodotti.repositories.CartRepo;
+import it.storeottana.vendita_prodotti.repositories.OrderRepo;
 import it.storeottana.vendita_prodotti.security.TokenJWT;
+import it.storeottana.vendita_prodotti.utils.EmailService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PaymentService {
 
-    @Value("${stripe.secret.key}")
-    private String stripeSecretKey;
     @Autowired
     private TokenJWT tokenJWT;
     @Autowired
     private CartRepo cartRepo;
+    @Autowired
+    private EmailService postman;
+    @Autowired
+    private OrderService orderService;
+    @Value("${stripe.secret.key}")
+    private String secretKey;
+    @Value("${urlBackend}")
+    private String urlBackend;
+    @Autowired
+    private OrderRepo orderRepo;
 
-    public PaymentService(@Value("${stripe.secret.key}") String stripeSecretKey) {
-        Stripe.apiKey = stripeSecretKey;
+    public PaymentService() {
+        Stripe.apiKey = secretKey;
     }
 
     public String processPayment(Product product, String token) throws StripeException {
@@ -111,6 +129,56 @@ public class PaymentService {
         } catch (StripeException e) {
             return ResponseEntity.badRequest().body("Errore nella creazione della sessione di pagamento: " + e.getMessage());
         }
+    }
+
+    public ResponseEntity<String> checkout(HttpServletRequest request) {
+        String payload;
+        try (BufferedReader reader = request.getReader()) {
+            payload = reader.lines().collect(Collectors.joining());
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Errore nella lettura del payload.");
+        }
+
+        String sigHeader = request.getHeader("Stripe-Signature");
+        Event event;
+        try {
+            event = Webhook.constructEvent(payload, sigHeader, secretKey);
+        } catch (SignatureVerificationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Errore di verifica della firma: " + e.getMessage());
+        }
+
+        if ("checkout.session.completed".equals(event.getType())) {
+            // Recupera l'oggetto Session dall'evento
+            Session session = (Session) event.getData().getObject();
+            // Recupera l'ID del carrello salvato in clientReferenceId
+            String cartIdStr = session.getClientReferenceId();
+            if (cartIdStr != null) {
+                try {
+                    Long cartId = Long.parseLong(cartIdStr);
+                    Optional<Cart> cartOpt = cartRepo.findById(cartId);
+                    if (cartOpt.isPresent()) {
+                        Cart cart = cartOpt.get();
+                        // Crea un nuovo ordine usando il carrello e il numero d'ordine generato
+                        Order order = new Order(orderService.generateOrderNumber(), cart.getProductsInCart(),
+                                cart.getTotalQuantities(), cart.getDeliveryMethods(), cart.getTotalCost(), cart.getShippingData());
+                        postman.sendMail(order.getShippingData().getEmail(),"Ordine acquisito correttamente!",
+                                "Per visualizzare lo stato del suo ordine, cliccare nel link sottostante:\n" +
+                                        urlBackend+"/order/get/"+order.getOrderNumber());
+                        cart = new Cart();
+                        cartRepo.saveAndFlush(cart);
+                        orderRepo.saveAndFlush(order);
+                    }
+                } catch (NumberFormatException ex) {
+                    // Gestione del caso in cui l'ID del carrello non sia nel formato atteso
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body("Formato dell'ID del carrello non valido.");
+                }
+            }
+        }
+
+        // Risposta per confermare la ricezione dell'evento
+        return ResponseEntity.ok("Ordine effettuato!\n" +
+                "Per visualizzare l'ordine cliccare nel link ricevuto per email");
     }
 }
 
