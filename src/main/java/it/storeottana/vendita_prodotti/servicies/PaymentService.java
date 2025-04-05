@@ -48,7 +48,7 @@ public class PaymentService {
     @Autowired
     private OrderRepo orderRepo;
 
-    public PaymentService() {
+    public PaymentService(@Value("${stripe.secret.key}") String secretKey) {
         Stripe.apiKey = secretKey;
     }
 
