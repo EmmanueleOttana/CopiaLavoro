@@ -40,7 +40,7 @@ public class CartService {
         Optional<Product> productR = productRepo.findById(idProduct);
         if (productR.isEmpty()) return "Errore di comunicazione!";
 
-        String token = getTokenFromCookie(request);
+        String token = tokenJWT.getTokenFromCookie(request);
         String username = token != null ? tokenJWT.getUsername(token) : tokenJWT.guestUsername();
 
         Cart cart = cartRepo.findByUsername(username).orElseGet(() -> {
@@ -55,7 +55,7 @@ public class CartService {
         }
 
         // Assicura che il token sia sempre aggiornato nel cookie
-        addTokenToCookie(response, cart.getToken());
+        tokenJWT.addTokenToCookie(response, cart.getToken());
 
         return "Prodotto aggiunto!";
     }
@@ -89,7 +89,7 @@ public class CartService {
         cart.setTotalCost(totalCost + cart.getDeliveryMethods().calculateShippingCost(totalCost));
     }
     public Object getCart(HttpServletRequest request){
-        String token = getTokenFromCookie(request);
+        String token = tokenJWT.getTokenFromCookie(request);
         if (token == null) return "Carrello non trovato!";
 
         Optional <Cart> cartR = cartRepo.findByUsername(tokenJWT.getUsername(token));
@@ -98,7 +98,7 @@ public class CartService {
         return cartR.get();
     }
     public String emptyCart(HttpServletRequest request) {
-        String token = getTokenFromCookie(request);
+        String token = tokenJWT.getTokenFromCookie(request);
         if (token == null) return "Errore di comunicazione!";
 
         Optional <Cart> cartR = cartRepo.findByUsername(tokenJWT.getUsername(token));
@@ -107,7 +107,7 @@ public class CartService {
         return "Carrello svuotato!";
     }
     public String deleteProduct(HttpServletRequest request, long idProduct) {
-        String token = getTokenFromCookie(request);
+        String token = tokenJWT.getTokenFromCookie(request);
         Optional <Product> productR = productRepo.findById(idProduct);
         if (token == null || productR.isEmpty()) return "Errore di comunicazione!";
 
@@ -122,7 +122,7 @@ public class CartService {
         return "Carrello non trovato!";
     }
     public Object changeDeliveryMethod(HttpServletRequest request, DeliveryMethods deliveryMethods){
-        String token = getTokenFromCookie(request);
+        String token = tokenJWT.getTokenFromCookie(request);
         Optional <Cart> cartR = cartRepo.findByUsername(tokenJWT.getUsername(token));
         if (cartR.isPresent()) {
             cartR.get().setDeliveryMethods(deliveryMethods);
@@ -132,7 +132,7 @@ public class CartService {
         return "Errore comunicazione!";
     }
     public Object changeQuantities(long idProduct, int quantity, HttpServletRequest request) {
-        String token = getTokenFromCookie(request);
+        String token =  tokenJWT.getTokenFromCookie(request);
         Optional <Cart> cartR = cartRepo.findByUsername(tokenJWT.getUsername(token));
         Optional <Product> productR = productRepo.findById(idProduct);
 
@@ -145,28 +145,5 @@ public class CartService {
         }
         return "Errore comunicazione!";
     }
-    public void addTokenToCookie(HttpServletResponse response, String token) {
-        ResponseCookie cookie = ResponseCookie.from("guest777token", token)
-                .path("/")
-                .maxAge(60 * 60 * 24 * 6) // 6 giorni
-                .secure(true)   // Il cookie sarà inviato solo su HTTPS
-                .httpOnly(true) // Impedisce accesso JS
-                .sameSite("None") // Permette l'invio cross-site
-                .build();
 
-        response.addHeader("Set-Cookie", cookie.toString());
-    }
-    public String getTokenFromCookie(HttpServletRequest request){
-        Cookie[] cookies = request.getCookies();
-        String token = null;
-        //Controlla l'esistenza del carrello
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("guest777token".equals(cookie.getName())) {
-                    token = cookie.getValue();
-                }
-            }
-        }
-        return token;
-    }
 }

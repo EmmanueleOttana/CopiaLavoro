@@ -13,4 +13,6 @@ public class ShippingData {
     private String city;
     private String province;
     private int zipcode;
+    private String email;
+    private String telephoneNumber;
 }

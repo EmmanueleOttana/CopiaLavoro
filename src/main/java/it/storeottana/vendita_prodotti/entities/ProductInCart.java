@@ -27,6 +27,11 @@ public class ProductInCart {
     @Column(nullable = false)
     private int quantity;
 
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
+
+
     public ProductInCart(Cart cart, Product product, int quantity) {
         this.cart = cart;
         this.product = product;

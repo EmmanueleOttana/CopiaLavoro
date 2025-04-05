@@ -5,8 +5,12 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.ResponseCookie;
 
 import java.util.Random;
 
@@ -56,6 +60,30 @@ public class TokenJWT {
             randomString.append(characters.charAt(index));
         }
         return randomString.toString();
+    }
+    public void addTokenToCookie(HttpServletResponse response, String token) {
+        ResponseCookie cookie = ResponseCookie.from("guest777token", token)
+                .path("/")
+                .maxAge(60 * 60 * 24 * 6) // 6 giorni
+                .secure(true)   // Il cookie sarà inviato solo su HTTPS
+                .httpOnly(true) // Impedisce accesso JS
+                .sameSite("None") // Permette l'invio cross-site
+                .build();
+
+        response.addHeader("Set-Cookie", cookie.toString());
+    }
+    public String getTokenFromCookie(HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        String token = null;
+        //Controlla l'esistenza del carrello
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("guest777token".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                }
+            }
+        }
+        return token;
     }
 
 }

@@ -12,12 +12,13 @@ companyEmail: manu91eo@storeottana.it
 JWT:
   Secret: 2zqxyz86qaazzoyp08hj8wmq4nzqtxmiw9i525qqsu894y3ees
 
-stripe:
-  secret:
-    key: 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
-
 bulkgate:
   api:
     url: https://portal.bulkgate.com/api/1.0/simple/transactional
     application_id: 34487
     application_token: vrIhIMxN2SzQuUXWVwEYMI25v6nfNv8PGfRCVAfFEbp8YvpHMZ
+
+stripe:
+  secret:
+    key: sk_test_51QxEIQAY23rh6peRdHRWiIJa3K6YijEIhYbWZkDlyVAWIQRtVCuwcYrXxj5e3Rimb4prhRwoXesmxsfCVD3O0Mt000PqSFV4ly
+vero: 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
