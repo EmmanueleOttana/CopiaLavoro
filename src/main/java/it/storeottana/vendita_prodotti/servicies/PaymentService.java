@@ -139,6 +139,8 @@ public class PaymentService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Errore nella lettura del payload.");
         }
         System.out.println("punto 1");
+        System.out.println(payload);
+        System.out.println(request.getHeader("Stripe-Signature"));
         String sigHeader = request.getHeader("Stripe-Signature");
         Event event;
         try {
