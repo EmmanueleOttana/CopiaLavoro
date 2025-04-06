@@ -21,4 +21,5 @@ JWT:
 stripe:
   secret:
     key: sk_test_51QxEIQAY23rh6peRdHRWiIJa3K6YijEIhYbWZkDlyVAWIQRtVCuwcYrXxj5e3Rimb4prhRwoXesmxsfCVD3O0Mt000PqSFV4ly
-vero: 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
+    authKey: whsec_qnnD3XmZHlJ1vJlrAGFdquwvO4MSWyr3
+vero_key: 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

@@ -42,8 +42,8 @@ public class PaymentService {
     private EmailService postman;
     @Autowired
     private OrderService orderService;
-    @Value("${stripe.secret.key}")
-    private String secretKey;
+    @Value("${stripe.secret.authKey}")
+    private static String authKey;
     @Value("${urlBackend}")
     private String urlBackend;
     @Autowired
@@ -140,11 +140,12 @@ public class PaymentService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Errore nella lettura del payload.");
         }
         System.out.println("punto 1");
+        System.out.println(authKey);
         String sigHeader = logRequestHeaders(request);
         Event event;
         try {
             assert sigHeader != null;
-            event = Webhook.constructEvent(payload, sigHeader, secretKey);
+            event = Webhook.constructEvent(payload, sigHeader, authKey);
         } catch (SignatureVerificationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Errore di verifica della firma: " + e.getMessage());
         }
