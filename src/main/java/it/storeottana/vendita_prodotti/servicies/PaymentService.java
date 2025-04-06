@@ -164,8 +164,7 @@ public class PaymentService {
                         postman.sendMail(order.getShippingData().getEmail(),"Ordine acquisito correttamente!",
                                 "Per visualizzare lo stato del suo ordine, cliccare nel link sottostante:\n" +
                                         urlBackend+"/order/get/"+order.getOrderNumber());
-                        cart = new Cart();
-                        cartRepo.saveAndFlush(cart);
+                        cartRepo.deleteById(cart.getId());
                         orderRepo.saveAndFlush(order);
                     }
                 } catch (NumberFormatException ex) {

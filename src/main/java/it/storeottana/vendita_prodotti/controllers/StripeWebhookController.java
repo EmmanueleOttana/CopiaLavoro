@@ -24,12 +24,12 @@ public class StripeWebhookController {
     private PaymentService paymentService;
     @Autowired
     private CartRepo cartRepo;
-/*
+
     @PostMapping("/create")
     public ResponseEntity<String> handleStripeWebhook(HttpServletRequest request) {
         return paymentService.checkout(request);
     }
- */
+ /*
 @PostMapping("/create")
 public ResponseEntity<String> handleStripeWebhook(HttpServletRequest request) {
     try {
@@ -51,5 +51,5 @@ public ResponseEntity<String> handleStripeWebhook(HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Errore Webhook");
     }
 }
-
+*/
 }
