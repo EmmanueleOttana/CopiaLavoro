@@ -1,7 +1,10 @@
 package it.storeottana.vendita_prodotti.servicies;
 
-class PaymentServiceTest {
 
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class PaymentServiceTest {
 
 
 }
