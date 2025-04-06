@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -132,6 +133,7 @@ public class PaymentService {
     }
 
     public ResponseEntity<String> checkout(HttpServletRequest request) {
+        logRequestHeaders(request);
         String payload;
         try (BufferedReader reader = request.getReader()) {
             payload = reader.lines().collect(Collectors.joining());
@@ -141,7 +143,7 @@ public class PaymentService {
         System.out.println("punto 1");
         System.out.println(payload);
         System.out.println(request.getHeaderNames());
-        String sigHeader = Webhook.Signature.EXPECTED_SCHEME; //request.getHeader("stripe-signature");
+        String sigHeader = request.getHeader("stripe-signature");
         Event event;
         try {
             event = Webhook.constructEvent(payload, sigHeader, secretKey);
@@ -187,5 +189,16 @@ public class PaymentService {
         return ResponseEntity.ok("Ordine effettuato!\n" +
                 "Per visualizzare l'ordine cliccare nel link ricevuto per email");
     }
+    private void logRequestHeaders(HttpServletRequest request) {
+        Enumeration<String> headerNames = request.getHeaderNames();
+        if (headerNames != null) {
+            while (headerNames.hasMoreElements()) {
+                String headerName = headerNames.nextElement();
+                String headerValue = request.getHeader(headerName);
+                System.out.println(headerName + ": " + headerValue);
+            }
+        }
+    }
+
 }
 
