@@ -43,7 +43,7 @@ public class PaymentService {
     @Autowired
     private OrderService orderService;
     @Value("${stripe.secret.authKey}")
-    private static String authKey;
+    private String authKey;
     @Value("${urlBackend}")
     private String urlBackend;
     @Autowired
