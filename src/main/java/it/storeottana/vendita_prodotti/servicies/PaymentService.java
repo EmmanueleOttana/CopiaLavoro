@@ -141,7 +141,7 @@ public class PaymentService {
         System.out.println("punto 1");
         System.out.println(payload);
         System.out.println(request.getHeaderNames());
-        String sigHeader = request.getHeader("Stripe-Signature");
+        String sigHeader = Webhook.Signature.EXPECTED_SCHEME; //request.getHeader("stripe-signature");
         Event event;
         try {
             event = Webhook.constructEvent(payload, sigHeader, secretKey);
