@@ -140,7 +140,6 @@ public class PaymentService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Errore nella lettura del payload.");
         }
         System.out.println("punto 1");
-        System.out.println(payload);
         String sigHeader = logRequestHeaders(request);
         Event event;
         try {
@@ -194,7 +193,7 @@ public class PaymentService {
             while (headerNames.hasMoreElements()) {
                 String headerName = headerNames.nextElement();
                 String headerValue = request.getHeader(headerName);
-                if (headerNames.equals("stripe-signature")){
+                if (headerName.equals("stripe-signature")){
                     return headerValue;
                 }
             }
