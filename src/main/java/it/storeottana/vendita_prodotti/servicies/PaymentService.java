@@ -140,7 +140,7 @@ public class PaymentService {
         }
         System.out.println("punto 1");
         System.out.println(payload);
-        System.out.println(request.getHeader("Stripe-Signature"));
+        System.out.println(request.getHeaderNames());
         String sigHeader = request.getHeader("Stripe-Signature");
         Event event;
         try {
