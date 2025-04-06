@@ -133,7 +133,6 @@ public class PaymentService {
     }
 
     public ResponseEntity<String> checkout(HttpServletRequest request) {
-        logRequestHeaders(request);
         String payload;
         try (BufferedReader reader = request.getReader()) {
             payload = reader.lines().collect(Collectors.joining());
@@ -142,10 +141,10 @@ public class PaymentService {
         }
         System.out.println("punto 1");
         System.out.println(payload);
-        System.out.println(request.getHeaderNames());
-        String sigHeader = request.getHeader("stripe-signature");
+        String sigHeader = logRequestHeaders(request);
         Event event;
         try {
+            assert sigHeader != null;
             event = Webhook.constructEvent(payload, sigHeader, secretKey);
         } catch (SignatureVerificationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Errore di verifica della firma: " + e.getMessage());
@@ -189,15 +188,18 @@ public class PaymentService {
         return ResponseEntity.ok("Ordine effettuato!\n" +
                 "Per visualizzare l'ordine cliccare nel link ricevuto per email");
     }
-    private void logRequestHeaders(HttpServletRequest request) {
+    private String logRequestHeaders(HttpServletRequest request) {
         Enumeration<String> headerNames = request.getHeaderNames();
         if (headerNames != null) {
             while (headerNames.hasMoreElements()) {
                 String headerName = headerNames.nextElement();
                 String headerValue = request.getHeader(headerName);
-                System.out.println(headerName + ": " + headerValue);
+                if (headerNames.equals("stripe-signature")){
+                    return headerValue;
+                }
             }
         }
+        return null;
     }
 
 }
