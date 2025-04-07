@@ -158,8 +158,7 @@ public class PaymentService {
                     if (cartOpt.isPresent()) {
                         Cart cart = cartOpt.get();
                         // Crea un nuovo ordine usando il carrello e il numero d'ordine generato
-                        Order order = new Order(orderService.generateOrderNumber(), cart.getProductsInCart(),
-                                cart.getTotalQuantities(), cart.getDeliveryMethods(), cart.getTotalCost(), cart.getShippingData());
+                        Order order = orderService.createOrderFromCart(cart);
 
                         postman.sendMail(order.getShippingData().getEmail(),"Ordine acquisito correttamente!",
                                 "Per visualizzare lo stato del suo ordine, cliccare nel link sottostante:\n" +

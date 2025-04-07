@@ -34,27 +34,5 @@ public class StripeWebhookController {
     public ResponseEntity<String> handleStripeWebhook(HttpServletRequest request) {
         return paymentService.checkout(request);
     }
- /*
-@PostMapping("/create")
-public ResponseEntity<String> handleStripeWebhook(HttpServletRequest request) {
-    try {
-        StringBuilder sb = new StringBuilder();
-        BufferedReader reader = request.getReader();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            sb.append(line);
-        }
 
-        String payload = sb.toString();
-        System.out.println("✅ Payload ricevuto da Stripe:");
-        System.out.println(payload);
-
-        return ResponseEntity.ok("Ricevuto");
-    } catch (Exception e) {
-        System.out.println("❌ Errore durante la lettura del webhook:");
-        e.printStackTrace();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Errore Webhook");
-    }
-}
-*/
 }

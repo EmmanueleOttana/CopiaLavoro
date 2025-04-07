@@ -6,6 +6,7 @@ import com.stripe.model.checkout.Session;
 import com.stripe.net.Webhook;
 import it.storeottana.vendita_prodotti.entities.Cart;
 import it.storeottana.vendita_prodotti.entities.Order;
+import it.storeottana.vendita_prodotti.entities.ProductInCart;
 import it.storeottana.vendita_prodotti.entities.StateOfOrder;
 import it.storeottana.vendita_prodotti.repositories.AdminRepo;
 import it.storeottana.vendita_prodotti.repositories.CartRepo;
@@ -13,6 +14,7 @@ import it.storeottana.vendita_prodotti.repositories.OrderRepo;
 import it.storeottana.vendita_prodotti.security.TokenJWT;
 import it.storeottana.vendita_prodotti.utils.EmailService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -50,7 +55,6 @@ public class OrderService {
         return "ORD-" + Instant.now().toEpochMilli();
     }
 
-
     public Object getOrder(String orderNumber) {
         Optional <Order> OrderR = orderRepo.findByOrderNumber(orderNumber);
         if (OrderR.isEmpty()) return "Numero ordine non trovato!";
@@ -70,7 +74,6 @@ public class OrderService {
 
         return "Richiesta d'annullamento inoltrata!";
     }
-
     public Object orderCancellation(@PathVariable String orderNumber, HttpServletRequest request) {
         String username = tokenJWT.getUsername(request.getHeader("Token"));
         if (adminRepo.findByUsername(username).isEmpty()) return "Errore richiesta!";
@@ -91,5 +94,30 @@ public class OrderService {
                         Cordiali saluti,
                         Francesco Ricci - store Ottanà""");
         return "Ordine annullato!";
+    }
+    @Transactional
+    public Order createOrderFromCart(Cart cart) {
+        // Crea il nuovo ordine e copia i dati dal carrello
+        Order order = new Order();
+        order.setOrderNumber(generateOrderNumber());
+        order.setDeliveryMethods(cart.getDeliveryMethods());
+        order.setTotalCost(cart.getTotalCost());
+        order.setTotalQuantities(cart.getTotalQuantities());
+        order.setShippingData(cart.getShippingData());
+        order.setTimestamp(LocalDateTime.now());
+        order.setStateOfOrder(StateOfOrder.IN_PREPARATION);
+
+        // Prepara la lista dei ProductInCart per l'ordine
+        List<ProductInCart> orderProducts = new ArrayList<>();
+        for (int i = 0; i < cart.getProductsInCart().size(); i++) {
+            ProductInCart pic = new ProductInCart();
+            pic.setCart(null);
+            pic.setOrder(order);
+            pic.setQuantity(cart.getProductsInCart().get(i).getQuantity());
+            orderProducts.add(pic);
+        }
+        order.setProductsInCart(orderProducts);
+
+        return order;
     }
 }
