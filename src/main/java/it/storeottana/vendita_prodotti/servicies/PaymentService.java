@@ -135,10 +135,8 @@ public class PaymentService {
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Errore nella lettura del payload.");
         }
-        System.out.println("punto 1");
-        System.out.println(authKey);
+
         String sigHeader = logRequestHeaders(request);
-        System.out.println(sigHeader);
         Event event;
         try {
             assert sigHeader != null;
@@ -146,32 +144,29 @@ public class PaymentService {
         } catch (SignatureVerificationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Errore di verifica della firma: " + e.getMessage());
         }
-        System.out.println("punto 2");
+
         if ("checkout.session.completed".equals(event.getType())) {
             // Recupera l'oggetto Session dall'evento
             Session session = (Session) event.getData().getObject();
             // Recupera l'ID del carrello salvato in clientReferenceId
             String cartIdStr = session.getClientReferenceId();
-            System.out.println("punto 3");
             if (cartIdStr != null) {
                 try {
                     Long cartId = Long.parseLong(cartIdStr);
                     Optional<Cart> cartOpt = cartRepo.findById(cartId);
-                    System.out.println("punto 4");
+
                     if (cartOpt.isPresent()) {
                         Cart cart = cartOpt.get();
                         // Crea un nuovo ordine usando il carrello e il numero d'ordine generato
                         Order order = new Order(orderService.generateOrderNumber(), cart.getProductsInCart(),
                                 cart.getTotalQuantities(), cart.getDeliveryMethods(), cart.getTotalCost(), cart.getShippingData());
-                        System.out.println("punto 5");
+
                         postman.sendMail(order.getShippingData().getEmail(),"Ordine acquisito correttamente!",
                                 "Per visualizzare lo stato del suo ordine, cliccare nel link sottostante:\n" +
                                         urlBackend+"/order/get/"+order.getOrderNumber());
-                        System.out.println("punto 6");
+
                         cartRepo.deleteById(cart.getId());
-                        System.out.println("punto 7");
                         orderRepo.saveAndFlush(order);
-                        System.out.println("punto 8");
                     }
                 } catch (NumberFormatException ex) {
                     // Gestione del caso in cui l'ID del carrello non sia nel formato atteso
@@ -180,7 +175,6 @@ public class PaymentService {
                 }
             }
         }
-        System.out.println("punto 9");
         // Risposta per confermare la ricezione dell'evento
         return ResponseEntity.ok("Ordine effettuato!\n" +
                 "Per visualizzare l'ordine cliccare nel link ricevuto per email");

@@ -1,5 +1,6 @@
 package it.storeottana.vendita_prodotti.servicies;
 
+import it.storeottana.vendita_prodotti.dto.ShippingData;
 import it.storeottana.vendita_prodotti.entities.Cart;
 import it.storeottana.vendita_prodotti.entities.DeliveryMethods;
 import it.storeottana.vendita_prodotti.entities.ProductInCart;
@@ -59,7 +60,17 @@ public class CartService {
 
         return "Prodotto aggiunto!";
     }
+    public Object addShippingData(HttpServletRequest request, ShippingData shippingData) {
+        String token = tokenJWT.getTokenFromCookie(request);
+        String username = token != null ? tokenJWT.getUsername(token) : tokenJWT.guestUsername();
 
+        Optional <Cart> cartR = cartRepo.findByUsername(username);
+        if (cartR.isEmpty() || cartR.get().getProductsInCart().isEmpty()) return "Carrello vuoto!";
+
+        cartR.get().setShippingData(shippingData);
+        cartRepo.saveAndFlush(cartR.get());
+        return true;
+    }
     public void addProducts(Cart cart, Product product, int quantity) {
         ProductInCart productInCart = new ProductInCart(cart, product, quantity);
         cart.addProductsInCart(productInCart);

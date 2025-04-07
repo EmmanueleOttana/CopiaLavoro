@@ -1,5 +1,6 @@
 package it.storeottana.vendita_prodotti.controllers;
 
+import it.storeottana.vendita_prodotti.dto.ShippingData;
 import it.storeottana.vendita_prodotti.entities.Cart;
 import it.storeottana.vendita_prodotti.entities.DeliveryMethods;
 import it.storeottana.vendita_prodotti.servicies.CartService;
@@ -19,6 +20,10 @@ public class CartController {
     public String addCart(@PathVariable long idProduct, @PathVariable int quantity,
                           HttpServletRequest request, HttpServletResponse response){
         return cartService.addCart(idProduct, quantity, request, response);
+    }
+    @PatchMapping("/addShippingData")
+    public Object addShippingData(HttpServletRequest request, @RequestBody ShippingData shippingData){
+        return cartService.addShippingData(request, shippingData);
     }
     @GetMapping("/get")
     public Object getCart(HttpServletRequest request){
