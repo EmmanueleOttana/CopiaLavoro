@@ -49,10 +49,6 @@ public class PaymentService {
     @Autowired
     private OrderRepo orderRepo;
 
-    public PaymentService(@Value("${stripe.secret.key}") String secretKey) {
-        Stripe.apiKey = secretKey;
-    }
-
     public String processPayment(Product product, String token) throws StripeException {
         Map<String, Object> chargeParams = new HashMap<>();
         chargeParams.put("amount", (int) (product.getPrice() * 100)); // Converti in centesimi
@@ -142,6 +138,7 @@ public class PaymentService {
         System.out.println("punto 1");
         System.out.println(authKey);
         String sigHeader = logRequestHeaders(request);
+        System.out.println(sigHeader);
         Event event;
         try {
             assert sigHeader != null;
