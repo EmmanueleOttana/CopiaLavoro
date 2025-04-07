@@ -113,6 +113,7 @@ public class OrderService {
             ProductInCart pic = new ProductInCart();
             pic.setCart(null);
             pic.setOrder(order);
+            pic.setProduct(cart.getProductsInCart().get(i).getProduct());
             pic.setQuantity(cart.getProductsInCart().get(i).getQuantity());
             orderProducts.add(pic);
         }
