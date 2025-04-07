@@ -131,7 +131,7 @@ public class PaymentService {
     public ResponseEntity<String> checkout(HttpServletRequest request) {
         String payload;
         try (BufferedReader reader = request.getReader()) {
-            payload = reader.lines().collect(Collectors.joining());
+            payload = reader.lines().collect(Collectors.joining("\n"));
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Errore nella lettura del payload.");
         }
