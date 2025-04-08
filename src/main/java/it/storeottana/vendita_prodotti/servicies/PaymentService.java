@@ -1,6 +1,5 @@
 package it.storeottana.vendita_prodotti.servicies;
 
-import com.stripe.Stripe;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Charge;
@@ -11,7 +10,7 @@ import com.stripe.param.checkout.SessionCreateParams;
 import it.storeottana.vendita_prodotti.entities.Cart;
 import it.storeottana.vendita_prodotti.entities.Order;
 import it.storeottana.vendita_prodotti.entities.Product;
-import it.storeottana.vendita_prodotti.entities.ProductInCart;
+import it.storeottana.vendita_prodotti.dto.ProductAndquantity;
 import it.storeottana.vendita_prodotti.repositories.CartRepo;
 import it.storeottana.vendita_prodotti.repositories.OrderRepo;
 import it.storeottana.vendita_prodotti.security.TokenJWT;
@@ -70,7 +69,7 @@ public class PaymentService {
 
         // Recupero del carrello tramite il token
         Optional<Cart> cart = cartRepo.findByUsername(tokenJWT.getUsername(token));
-        if (cart.isEmpty() || cart.get().getProductsInCart().isEmpty()) {
+        if (cart.isEmpty() || cart.get().getProductAndquantity().isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
@@ -91,7 +90,7 @@ public class PaymentService {
                     .setClientReferenceId(String.valueOf(cart.get().getId()));
 
             // Ciclo per aggiungere ogni prodotto presente nel carrello come line item
-            for (ProductInCart pc : cart.get().getProductsInCart()) {
+            for (ProductAndquantity pc : cart.get().getProductAndquantity()) {
                 SessionCreateParams.LineItem lineItem = SessionCreateParams.LineItem.builder()
                         .setQuantity((long) pc.getQuantity())
                         .setAdjustableQuantity(

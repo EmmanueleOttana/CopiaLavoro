@@ -3,22 +3,19 @@ package it.storeottana.vendita_prodotti.servicies;
 import it.storeottana.vendita_prodotti.dto.ShippingData;
 import it.storeottana.vendita_prodotti.entities.Cart;
 import it.storeottana.vendita_prodotti.entities.DeliveryMethods;
-import it.storeottana.vendita_prodotti.entities.ProductInCart;
+import it.storeottana.vendita_prodotti.dto.ProductAndquantity;
 import it.storeottana.vendita_prodotti.entities.Product;
-import it.storeottana.vendita_prodotti.repositories.ProductInCartRepo;
 import it.storeottana.vendita_prodotti.repositories.CartRepo;
 import it.storeottana.vendita_prodotti.repositories.ProductRepo;
 import it.storeottana.vendita_prodotti.security.TokenJWT;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.scheduling.annotation.Scheduled;
 import java.time.LocalDateTime;
 
 import java.util.*;
-import org.springframework.http.ResponseCookie;
 
 @Service
 public class CartService {
@@ -28,8 +25,6 @@ public class CartService {
     private CartRepo cartRepo;
     @Autowired
     private ProductRepo productRepo;
-    @Autowired
-    private ProductInCartRepo productInCartRepo;
 
     @Scheduled(cron = "0 0 3 * * ?")
     public void cleanupExpiredCarts() {
@@ -65,36 +60,36 @@ public class CartService {
         String username = token != null ? tokenJWT.getUsername(token) : tokenJWT.guestUsername();
 
         Optional <Cart> cartR = cartRepo.findByUsername(username);
-        if (cartR.isEmpty() || cartR.get().getProductsInCart().isEmpty()) return "Carrello vuoto!";
+        if (cartR.isEmpty() || cartR.get().getProductAndquantity().isEmpty()) return "Carrello vuoto!";
 
         cartR.get().setShippingData(shippingData);
         cartRepo.saveAndFlush(cartR.get());
         return true;
     }
     public void addProducts(Cart cart, Product product, int quantity) {
-        ProductInCart productInCart = new ProductInCart(cart, product, quantity);
-        cart.addProductsInCart(productInCart);
+        ProductAndquantity productAndquantity = new ProductAndquantity(product, quantity);
+        cart.addProductsInCart(productAndquantity);
         updateCart(cart);
         cartRepo.saveAndFlush(cart);
     }
     public boolean isFoundProduct(Cart cart, Product product){
         boolean isFound = false;
-        for ( ProductInCart p : cart.getProductsInCart() ){
-            if (p.getProduct() == product){
-                p.setQuantity(p.getQuantity()+1);
+        for ( ProductAndquantity pic : cart.getProductAndquantity() ){
+            if (pic.getProduct() == product){
+                pic.setQuantity(pic.getQuantity()+1);
 
                 updateCart(cart);
-                productInCartRepo.saveAndFlush(p);
+                cartRepo.saveAndFlush(cart);
                 isFound = true;
             }
         }
         return isFound;
     }
     public void updateCart(Cart cart){
-        cart.setTotalQuantities(cart.getProductsInCart().stream().mapToInt(ProductInCart::getQuantity).sum());
+        cart.setTotalQuantities(cart.getProductAndquantity().stream().mapToInt(ProductAndquantity::getQuantity).sum());
 
         double totalCost = 0;
-        for (ProductInCart pr : cart.getProductsInCart()){
+        for (ProductAndquantity pr : cart.getProductAndquantity()){
             totalCost += pr.getProduct().getPrice() * pr.getQuantity();
         }
         cart.setTotalCost(totalCost + cart.getDeliveryMethods().calculateShippingCost(totalCost));
@@ -124,7 +119,6 @@ public class CartService {
 
         Optional <Cart> cartR = cartRepo.findByUsername(tokenJWT.getUsername(token));
         if (cartR.isPresent()) {
-            productInCartRepo.deleteByCartAndProduct(cartR.get(), productR.get());
             updateCart(cartR.get());
             cartRepo.saveAndFlush(cartR.get());
 
@@ -148,7 +142,7 @@ public class CartService {
         Optional <Product> productR = productRepo.findById(idProduct);
 
         if (cartR.isPresent() && productR.isPresent()) {
-            cartR.get().getProductsInCart().stream()
+            cartR.get().getProductAndquantity().stream()
                     .filter(pc -> pc.getProduct().equals(productR.get()))
                     .forEach(pc -> pc.setQuantity(quantity));
             updateCart(cartR.get());

@@ -1,5 +1,6 @@
 package it.storeottana.vendita_prodotti.entities;
 
+import it.storeottana.vendita_prodotti.dto.ProductAndquantity;
 import it.storeottana.vendita_prodotti.dto.ShippingData;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -19,8 +20,9 @@ public class Order {
     @Column(nullable = false)
     private String orderNumber;
     @Column(nullable = false)
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProductInCart> productsInCart;
+    @Embedded
+    @ElementCollection
+    private List<ProductAndquantity> productsInCart;
     @Column(nullable = false)
     private int totalQuantities;
     @Enumerated(EnumType.STRING)
@@ -36,7 +38,7 @@ public class Order {
     @Column(nullable = false)
     private StateOfOrder stateOfOrder;
 
-    public Order(String orderNumber, List<ProductInCart> productsInCart, int totalQuantities,
+    public Order(String orderNumber, List<ProductAndquantity> productsInCart, int totalQuantities,
                  DeliveryMethods deliveryMethods, double totalCost, ShippingData shippingData) {
         this.orderNumber = orderNumber;
         this.productsInCart = productsInCart;

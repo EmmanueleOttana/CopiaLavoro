@@ -1,5 +1,6 @@
 package it.storeottana.vendita_prodotti.entities;
 
+import it.storeottana.vendita_prodotti.dto.ProductAndquantity;
 import it.storeottana.vendita_prodotti.dto.ShippingData;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -15,8 +16,9 @@ public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProductInCart> productsInCart;
+    @Embedded
+    @ElementCollection
+    private List<ProductAndquantity> productAndquantity;
     private int totalQuantities;
     @Enumerated(EnumType.STRING)
     private DeliveryMethods deliveryMethods; //Metodo di consegna
@@ -27,21 +29,22 @@ public class Cart {
     private String username;
     private String token;
 
-     public Cart(ProductInCart productInCart, String username, String token) {
-         this.productsInCart = new ArrayList<>(List.of(productInCart));
+     public Cart(ProductAndquantity productAndquantity, String username, String token) {
+         this.productAndquantity = new ArrayList<>(List.of(productAndquantity));
          this.totalQuantities = 1;
          this.deliveryMethods = DeliveryMethods.GRATUITA;
-         this.totalCost = productInCart.getProduct().getPrice();
+         this.totalCost = productAndquantity.getProduct().getPrice();
          this.createdAt = LocalDateTime.now();
+         this.shippingData = new ShippingData();
          this.username = username;
          this.token = token;
     }
-    public void addProductsInCart(ProductInCart productInCart) {
-        this.productsInCart.add(productInCart);
+    public void addProductsInCart(ProductAndquantity productAndquantity) {
+        this.productAndquantity.add(productAndquantity);
     }
 
     public Cart() {
-        this.productsInCart = new ArrayList<>();
+        this.productAndquantity = new ArrayList<>();
         this.totalQuantities = 1;
         this.deliveryMethods = DeliveryMethods.GRATUITA;
         this.totalCost = 0;

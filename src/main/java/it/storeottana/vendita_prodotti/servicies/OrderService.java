@@ -1,12 +1,8 @@
 package it.storeottana.vendita_prodotti.servicies;
 
-import com.stripe.exception.SignatureVerificationException;
-import com.stripe.model.Event;
-import com.stripe.model.checkout.Session;
-import com.stripe.net.Webhook;
 import it.storeottana.vendita_prodotti.entities.Cart;
 import it.storeottana.vendita_prodotti.entities.Order;
-import it.storeottana.vendita_prodotti.entities.ProductInCart;
+import it.storeottana.vendita_prodotti.dto.ProductAndquantity;
 import it.storeottana.vendita_prodotti.entities.StateOfOrder;
 import it.storeottana.vendita_prodotti.repositories.AdminRepo;
 import it.storeottana.vendita_prodotti.repositories.CartRepo;
@@ -17,19 +13,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -108,13 +99,11 @@ public class OrderService {
         order.setStateOfOrder(StateOfOrder.IN_PREPARATION);
 
         // Prepara la lista dei ProductInCart per l'ordine
-        List<ProductInCart> orderProducts = new ArrayList<>();
-        for (int i = 0; i < cart.getProductsInCart().size(); i++) {
-            ProductInCart pic = new ProductInCart();
-            pic.setCart(null);
-            pic.setOrder(order);
-            pic.setProduct(cart.getProductsInCart().get(i).getProduct());
-            pic.setQuantity(cart.getProductsInCart().get(i).getQuantity());
+        List<ProductAndquantity> orderProducts = new ArrayList<>();
+        for (int i = 0; i < cart.getProductAndquantity().size(); i++) {
+            ProductAndquantity pic = new ProductAndquantity();
+            pic.setProduct(cart.getProductAndquantity().get(i).getProduct());
+            pic.setQuantity(cart.getProductAndquantity().get(i).getQuantity());
             orderProducts.add(pic);
         }
         order.setProductsInCart(orderProducts);
