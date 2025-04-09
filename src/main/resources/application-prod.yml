@@ -10,4 +10,5 @@ spring:
       ddl-auto: update
 
 urlBackend: https://venditaprodotti.onrender.com
+urlSiteWeb: https://storeottana.it
 directoryFile: x
