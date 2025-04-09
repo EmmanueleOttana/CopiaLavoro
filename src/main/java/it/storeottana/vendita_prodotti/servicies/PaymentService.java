@@ -43,8 +43,8 @@ public class PaymentService {
     private OrderService orderService;
     @Value("${stripe.secret.authKey}")
     private String authKey;
-    @Value("${urlBackend}")
-    private String urlBackend;
+    @Value("${urlSiteWeb}")
+    private String urlSiteWeb;
     @Autowired
     private OrderRepo orderRepo;
 
@@ -190,7 +190,7 @@ public class PaymentService {
 
                         postman.sendMail(order.getShippingData().getEmail(),"Ordine acquisito correttamente!",
                                 "Per visualizzare lo stato del suo ordine, cliccare nel link sottostante:\n" +
-                                        urlBackend+"/order/get/"+order.getOrderNumber());
+                                        urlSiteWeb +"/order/get/"+order.getOrderNumber());
 
                         cartRepo.deleteById(cart.getId());
                         orderRepo.saveAndFlush(order);

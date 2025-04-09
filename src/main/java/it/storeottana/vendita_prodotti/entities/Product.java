@@ -25,7 +25,6 @@ public class Product {
     private String description;
     @Column(nullable = false)
     private double price;
-    //@JoinColumn(name = "product_id")
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List <Feedback> feedback;
 
