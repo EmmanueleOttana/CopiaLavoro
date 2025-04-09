@@ -121,9 +121,8 @@ public class PaymentService {
                 paramsBuilder.addLineItem(lineItem);
             }
 
-            // Se il metodo di spedizione è "RAPIDA", aggiungi anche le spese di spedizione come line item
             // Assumiamo che il campo in Cart sia chiamato deliveryMethods e che per spedizione rapida il valore sia "RAPIDA"
-            if ("RAPIDA".equalsIgnoreCase(cart.getDeliveryMethods().getDescription())) {
+            if (String.valueOf(cart.getDeliveryMethods()).equals("RAPIDA")) {
                 // Calcola il 20% del totale dei prodotti
                 long shippingFee = Math.round(productsTotalInCents * 0.2);
 
