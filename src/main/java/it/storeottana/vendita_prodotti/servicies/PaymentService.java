@@ -66,13 +66,12 @@ public class PaymentService {
         if (token == null) {
             return ResponseEntity.badRequest().body("Token del carrello non trovato nei cookie.");
         }
-
         // Recupero del carrello tramite il token
-        Optional<Cart> cart = cartRepo.findByUsername(tokenJWT.getUsername(token));
-        if (cart.isEmpty() || cart.get().getProductAndquantity().isEmpty()) {
+        Optional<Cart> cartOptional = cartRepo.findByUsername(tokenJWT.getUsername(token));
+        if (cartOptional.isEmpty() || cartOptional.get().getProductAndquantity().isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-
+        Cart cart = cartOptional.get();
         String urlImage = "https://res.cloudinary.com/dzaopwmcj/image/upload/v1742655982/storeOttana/";
 
         try {
@@ -87,10 +86,16 @@ public class PaymentService {
                     .setCancelUrl("https://storeottana.it")
                     .setAllowPromotionCodes(true)
                     // Aggiunge il riferimento al carrello
-                    .setClientReferenceId(String.valueOf(cart.get().getId()));
+                    .setClientReferenceId(String.valueOf(cart.getId()));
+
+            // Variabile per sommare il totale dei prodotti (in centesimi)
+            long productsTotalInCents = 0;
 
             // Ciclo per aggiungere ogni prodotto presente nel carrello come line item
-            for (ProductAndquantity pc : cart.get().getProductAndquantity()) {
+            for (ProductAndquantity pc : cart.getProductAndquantity()) {
+                long unitAmount = (long) (pc.getProduct().getPrice() * 100);
+                productsTotalInCents += unitAmount * pc.getQuantity();
+
                 SessionCreateParams.LineItem lineItem = SessionCreateParams.LineItem.builder()
                         .setQuantity((long) pc.getQuantity())
                         .setAdjustableQuantity(
@@ -102,7 +107,7 @@ public class PaymentService {
                         .setPriceData(
                                 SessionCreateParams.LineItem.PriceData.builder()
                                         .setCurrency("eur")
-                                        .setUnitAmount((long) (pc.getProduct().getPrice() * 100))
+                                        .setUnitAmount(unitAmount)
                                         .setProductData(
                                                 SessionCreateParams.LineItem.PriceData.ProductData.builder()
                                                         .setName(pc.getProduct().getName())
@@ -116,6 +121,30 @@ public class PaymentService {
                 paramsBuilder.addLineItem(lineItem);
             }
 
+            // Se il metodo di spedizione è "RAPIDA", aggiungi anche le spese di spedizione come line item
+            // Assumiamo che il campo in Cart sia chiamato deliveryMethods e che per spedizione rapida il valore sia "RAPIDA"
+            if ("RAPIDA".equalsIgnoreCase(cart.getDeliveryMethods().getDescription())) {
+                // Calcola il 20% del totale dei prodotti
+                long shippingFee = Math.round(productsTotalInCents * 0.2);
+
+                SessionCreateParams.LineItem shippingLineItem = SessionCreateParams.LineItem.builder()
+                        .setQuantity(1L)
+                        .setPriceData(
+                                SessionCreateParams.LineItem.PriceData.builder()
+                                        .setCurrency("eur")
+                                        .setUnitAmount(shippingFee)
+                                        .setProductData(
+                                                SessionCreateParams.LineItem.PriceData.ProductData.builder()
+                                                        .setName("Spese di spedizione (RAPIDA)")
+                                                        .setDescription("Spedizione rapida: 20% del totale dei prodotti")
+                                                        .build()
+                                        )
+                                        .build()
+                        )
+                        .build();
+                paramsBuilder.addLineItem(shippingLineItem);
+            }
+
             // Creazione della sessione di checkout su Stripe
             SessionCreateParams params = paramsBuilder.build();
             Session session = Session.create(params);
@@ -126,6 +155,7 @@ public class PaymentService {
             return ResponseEntity.badRequest().body("Errore nella creazione della sessione di pagamento: " + e.getMessage());
         }
     }
+
 
     public ResponseEntity<String> checkout(HttpServletRequest request) {
         String payload;
