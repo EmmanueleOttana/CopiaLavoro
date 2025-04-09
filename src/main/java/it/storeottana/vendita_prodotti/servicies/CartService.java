@@ -119,10 +119,15 @@ public class CartService {
 
         Optional <Cart> cartR = cartRepo.findByUsername(tokenJWT.getUsername(token));
         if (cartR.isPresent()) {
-            updateCart(cartR.get());
-            cartRepo.saveAndFlush(cartR.get());
-
-            return "Rimosso!";
+            boolean removed = cartR.get().getProductAndquantity().removeIf(
+                    item -> item.getProduct().getId() == idProduct);
+            if (removed) {
+                updateCart(cartR.get());
+                cartRepo.saveAndFlush(cartR.get());
+                return "Rimosso!";
+            } else {
+                return "Prodotto non presente nel carrello!";
+            }
         }
         return "Carrello non trovato!";
     }
