@@ -22,8 +22,8 @@ public class AccessService {
     private AdminRepo adminRepo;
     @Autowired
     private EmailService postman;
-    @Value("${urlBackend}")
-    private String urlBackend;
+    @Value("${urlSiteWeb}")
+    private String urlSiteWeb;
 
     public Object login(String email, String password, HttpServletResponse response) {
         Optional <Admin> admin = adminRepo.findByEmail(email);
@@ -49,7 +49,7 @@ public class AccessService {
             adminDB.setSuspended(true);
             this.postman.sendMail(email, "Reset password",
                     "Per inserire una nuova password clicca nel link sottostante:\n" +
-                            urlBackend+"/access/resetpw/"+adminDB.getId());
+                            urlSiteWeb +"/access/resetpw/"+adminDB.getId());
 
             adminRepo.saveAndFlush(adminDB);
             return "É stata inviata un email per resettare la password";
