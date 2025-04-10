@@ -29,6 +29,7 @@ public class AccessService {
         Optional <Admin> admin = adminRepo.findByEmail(email);
         if (admin.isPresent()) {
             Admin adminDB = admin.get();
+            response.addHeader("Access-Control-Expose-Headers", "Token");
             if (adminDB.isActive()) {
                 if (EncryptionPw.checkPassword(password, adminDB.getPassword())) {
                     adminDB.setToken(tokenJWT.getToken(adminDB.getUsername()));

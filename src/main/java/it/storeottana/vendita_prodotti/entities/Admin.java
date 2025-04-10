@@ -1,7 +1,6 @@
 package it.storeottana.vendita_prodotti.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

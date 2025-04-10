@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: postgresql://:dpg-cvrom10gjchc73betgjg-a.oregon-postgres.render.com/venditaprodotti_db
+    url: jdbc:postgresql://dpg-cvrom10gjchc73betgjg-a.oregon-postgres.render.com/venditaprodotti_db
     username: venditaprodotti_db_user
     password: gon1yrA01EhVmDv5CdvZdycIBOd5MUBV
   jpa:

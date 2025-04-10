@@ -15,16 +15,7 @@ import java.util.List;
 public class ProductController {
     @Autowired
     private ProductService productService;
-    /*
-    @PostMapping("/upload")
-    public List<String> upload(@RequestParam MultipartFile[] files) throws Exception {
-        return serviceInsertion.upload(files);
-    }
-    @GetMapping("/download")
-    public byte[] download(@RequestParam String fileName, HttpServletResponse response) throws Exception {
-        return serviceInsertion.download(fileName, response);
-    }
-    */
+
     @PostMapping("/create")
     public Object create(@RequestParam String name, @RequestParam MultipartFile[] files,
                          @RequestParam String title, @RequestParam String description,
