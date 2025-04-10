@@ -9,6 +9,7 @@ import com.stripe.net.Webhook;
 import com.stripe.param.checkout.SessionCreateParams;
 import it.storeottana.vendita_prodotti.entities.Cart;
 import it.storeottana.vendita_prodotti.entities.Order;
+import it.storeottana.vendita_prodotti.entities.OrderPriority;
 import it.storeottana.vendita_prodotti.entities.Product;
 import it.storeottana.vendita_prodotti.dto.ProductAndquantity;
 import it.storeottana.vendita_prodotti.repositories.CartRepo;
@@ -121,8 +122,8 @@ public class PaymentService {
                 paramsBuilder.addLineItem(lineItem);
             }
 
-            // Assumiamo che il campo in Cart sia chiamato deliveryMethods e che per spedizione rapida il valore sia "RAPIDA"
-            if (String.valueOf(cart.getDeliveryMethods()).equals("RAPIDA")) {
+            // Assumiamo che il campo in Cart sia chiamato deliveryMethods e che per spedizione rapida il valore sia "PRIORITARIO"
+            if (cart.getOrderPriority().equals(OrderPriority.PRIORITARIO)) {
                 // Calcola il 20% del totale dei prodotti
                 long shippingFee = Math.round(productsTotalInCents * 0.2);
 
@@ -134,8 +135,8 @@ public class PaymentService {
                                         .setUnitAmount(shippingFee)
                                         .setProductData(
                                                 SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                                                        .setName("Spese di spedizione (RAPIDA)")
-                                                        .setDescription("Spedizione rapida: 20% del totale dei prodotti")
+                                                        .setName("Costo Prioritario")
+                                                        .setDescription("Priorità ordine: 20% del totale dei prodotti")
                                                         .build()
                                         )
                                         .build()

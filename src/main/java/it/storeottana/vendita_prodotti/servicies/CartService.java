@@ -2,7 +2,7 @@ package it.storeottana.vendita_prodotti.servicies;
 
 import it.storeottana.vendita_prodotti.dto.ShippingData;
 import it.storeottana.vendita_prodotti.entities.Cart;
-import it.storeottana.vendita_prodotti.entities.DeliveryMethods;
+import it.storeottana.vendita_prodotti.entities.OrderPriority;
 import it.storeottana.vendita_prodotti.dto.ProductAndquantity;
 import it.storeottana.vendita_prodotti.entities.Product;
 import it.storeottana.vendita_prodotti.repositories.CartRepo;
@@ -92,7 +92,7 @@ public class CartService {
         for (ProductAndquantity pr : cart.getProductAndquantity()){
             totalCost += pr.getProduct().getPrice() * pr.getQuantity();
         }
-        cart.setTotalCost(totalCost + cart.getDeliveryMethods().calculateShippingCost(totalCost));
+        cart.setTotalCost(totalCost + cart.getOrderPriority().calculateShippingCost(totalCost));
     }
     public Object getCart(HttpServletRequest request){
         String token = tokenJWT.getTokenFromCookie(request);
@@ -131,11 +131,11 @@ public class CartService {
         }
         return "Carrello non trovato!";
     }
-    public Object changeDeliveryMethod(HttpServletRequest request, DeliveryMethods deliveryMethods){
+    public Object changeDeliveryMethod(HttpServletRequest request, OrderPriority orderPriority){
         String token = tokenJWT.getTokenFromCookie(request);
         Optional <Cart> cartR = cartRepo.findByUsername(tokenJWT.getUsername(token));
         if (cartR.isPresent()) {
-            cartR.get().setDeliveryMethods(deliveryMethods);
+            cartR.get().setOrderPriority(orderPriority);
             updateCart(cartR.get());
             return cartRepo.saveAndFlush(cartR.get());
         }

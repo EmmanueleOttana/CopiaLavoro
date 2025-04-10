@@ -5,11 +5,11 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum DeliveryMethods {
-    RAPIDA("Entro 3 giorni", 20),
-    GRATUITA("Entro 10 giorni", 0);
+public enum OrderPriority {
+    PRIORITARIO("Entro 3 giorni", 20),
+    STANDARD("Entro 10 giorni", 0);
 
-    private final String description;
+    private final String DeliveryTimes;
     private final double costPercentage;
 
     public double calculateShippingCost(double totalCost) {

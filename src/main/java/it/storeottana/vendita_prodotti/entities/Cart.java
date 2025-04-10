@@ -21,7 +21,7 @@ public class Cart {
     private List<ProductAndquantity> productAndquantity;
     private int totalQuantities;
     @Enumerated(EnumType.STRING)
-    private DeliveryMethods deliveryMethods; //Metodo di consegna
+    private OrderPriority orderPriority; //Metodo di consegna
     private double totalCost;
     @Embedded
     private ShippingData shippingData;
@@ -32,7 +32,7 @@ public class Cart {
      public Cart(ProductAndquantity productAndquantity, String username, String token) {
          this.productAndquantity = new ArrayList<>(List.of(productAndquantity));
          this.totalQuantities = 1;
-         this.deliveryMethods = DeliveryMethods.GRATUITA;
+         this.orderPriority = OrderPriority.STANDARD;
          this.totalCost = productAndquantity.getProduct().getPrice();
          this.createdAt = LocalDateTime.now();
          this.shippingData = new ShippingData();
@@ -46,7 +46,7 @@ public class Cart {
     public Cart() {
         this.productAndquantity = new ArrayList<>();
         this.totalQuantities = 1;
-        this.deliveryMethods = DeliveryMethods.GRATUITA;
+        this.orderPriority = OrderPriority.STANDARD;
         this.totalCost = 0;
         this.shippingData = new ShippingData();
         this.createdAt = LocalDateTime.now();
