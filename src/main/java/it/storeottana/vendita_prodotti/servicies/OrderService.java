@@ -91,7 +91,7 @@ public class OrderService {
         // Crea il nuovo ordine e copia i dati dal carrello
         Order order = new Order();
         order.setOrderNumber(generateOrderNumber());
-        order.setDeliveryMethods(cart.getDeliveryMethods());
+        order.setOrderPriority(cart.getOrderPriority());
         order.setTotalCost(cart.getTotalCost());
         order.setTotalQuantities(cart.getTotalQuantities());
         order.setShippingData(cart.getShippingData());

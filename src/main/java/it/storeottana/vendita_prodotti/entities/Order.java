@@ -27,7 +27,7 @@ public class Order {
     private int totalQuantities;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private DeliveryMethods deliveryMethods; //Metodo di consegna
+    private OrderPriority orderPriority; //Metodo di consegna
     @Column(nullable = false)
     private double totalCost;
     @Embedded
@@ -39,11 +39,11 @@ public class Order {
     private StateOfOrder stateOfOrder;
 
     public Order(String orderNumber, List<ProductAndquantity> productsInCart, int totalQuantities,
-                 DeliveryMethods deliveryMethods, double totalCost, ShippingData shippingData) {
+                 OrderPriority orderPriority, double totalCost, ShippingData shippingData) {
         this.orderNumber = orderNumber;
         this.productsInCart = productsInCart;
         this.totalQuantities = totalQuantities;
-        this.deliveryMethods = deliveryMethods;
+        this.orderPriority = orderPriority;
         this.totalCost = totalCost;
         this.shippingData = shippingData;
         this.timestamp = LocalDateTime.now();

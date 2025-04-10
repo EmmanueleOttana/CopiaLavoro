@@ -1,8 +1,7 @@
 package it.storeottana.vendita_prodotti.controllers;
 
 import it.storeottana.vendita_prodotti.dto.ShippingData;
-import it.storeottana.vendita_prodotti.entities.Cart;
-import it.storeottana.vendita_prodotti.entities.DeliveryMethods;
+import it.storeottana.vendita_prodotti.entities.OrderPriority;
 import it.storeottana.vendita_prodotti.servicies.CartService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -38,8 +37,8 @@ public class CartController {
         return cartService.deleteProduct(request, idProduct);
     }
     @PatchMapping("/delivery")
-    public Object changeDeliveryMethod(HttpServletRequest request, @RequestParam DeliveryMethods deliveryMethods){
-        return cartService.changeDeliveryMethod(request, deliveryMethods);
+    public Object changeDeliveryMethod(HttpServletRequest request, @RequestParam OrderPriority orderPriority){
+        return cartService.changeDeliveryMethod(request, orderPriority);
     }
     @PatchMapping("/updateQuantity")
     public Object changeQuantities(@RequestParam long idProduct, @RequestParam int quantity,
