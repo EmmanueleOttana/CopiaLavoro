@@ -82,7 +82,7 @@ public class PaymentService {
                     .addPaymentMethodType(SessionCreateParams.PaymentMethodType.LINK)
                     .addPaymentMethodType(SessionCreateParams.PaymentMethodType.KLARNA)
                     .setMode(SessionCreateParams.Mode.PAYMENT)
-                    .setSuccessUrl("https://storeottana.it")
+                    .setSuccessUrl(urlSiteWeb+"/payment/success")
                     .setCancelUrl("https://storeottana.it")
                     .setAllowPromotionCodes(true)
                     // Aggiunge il riferimento al carrello
