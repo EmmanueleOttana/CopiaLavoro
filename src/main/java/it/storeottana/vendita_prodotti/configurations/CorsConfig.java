@@ -22,8 +22,9 @@ public class CorsConfig {
                                 "http://storeottana.it",
                                 "https://storeottana.it"
                         )
-                        .allowedMethods("GET", "POST", "PATCH", "PUT", "DELETE")
+                        .allowedMethods("GET", "POST", "PATCH", "DELETE")
                         .allowedHeaders("*")
+                        .exposedHeaders("Token")
                         .allowCredentials(true); // Permetti credenziali, se necessario
             }
         };
