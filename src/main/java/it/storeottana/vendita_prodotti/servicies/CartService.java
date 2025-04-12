@@ -42,7 +42,7 @@ public class CartService {
         Cart cart = cartRepo.findByUsername(username).orElseGet(() -> {
             Cart newCart = new Cart();
             newCart.setUsername(username);
-            newCart.setToken(tokenJWT.getToken(username));
+            newCart.setToken(tokenJWT.createToken(username));
             return newCart;
         });
 

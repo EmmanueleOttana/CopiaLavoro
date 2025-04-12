@@ -29,11 +29,10 @@ public class AccessService {
         Optional <Admin> admin = adminRepo.findByEmail(email);
         if (admin.isPresent()) {
             Admin adminDB = admin.get();
-            response.addHeader("Access-Control-Expose-Headers", "Token");
             if (adminDB.isActive()) {
                 if (EncryptionPw.checkPassword(password, adminDB.getPassword())) {
-                    adminDB.setToken(tokenJWT.getToken(adminDB.getUsername()));
-                    response.addHeader("Token", adminDB.getToken());
+                    adminDB.setToken(tokenJWT.createToken(adminDB.getUsername()));
+                    response.addHeader("BearerToken", adminDB.getToken());
                     adminDB.setTimestampToken(LocalDateTime.now());
                     adminDB.setSuspended(false);
                     adminRepo.saveAndFlush(adminDB);

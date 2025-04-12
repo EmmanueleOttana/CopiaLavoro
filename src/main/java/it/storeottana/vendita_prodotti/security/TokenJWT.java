@@ -5,46 +5,79 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.DecodingException;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseCookie;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
+
+import java.util.Base64;
+import java.util.Date;
 import java.util.Random;
 
-@Configuration
+@Component
 public class TokenJWT {
 
-    @Value("${JWT.Secret}")
+    @Value("${jwt.secret}")
     private String secret;
 
-    public String getToken(String username) throws ExpiredJwtException {
-         String token = Jwts.builder()
-                .setSubject(username)
-                .signWith(SignatureAlgorithm.HS256, secret)
+    @Value("${jwt.expiration-ms}")
+    private long validityInMilliseconds;
+
+    private Key key;
+
+    @PostConstruct
+    public void init() {
+        try {
+            byte[] keyBytes = Base64.getUrlDecoder().decode(secret.trim());
+            this.key = Keys.hmacShaKeyFor(keyBytes);
+        } catch (IllegalArgumentException | DecodingException e) {
+            // Se decodificare fallisce, assumiamo che il secret sia plain text
+            this.key = Keys.hmacShaKeyFor(secret.trim().getBytes(StandardCharsets.UTF_8));
+        }
+    }
+
+    public String createToken(String username) {
+        Claims claims = Jwts.claims().setSubject(username);
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + validityInMilliseconds);
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(validity)
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
-         return token;
     }
 
     public String getUsername(String token) {
-        if (token == null) return "";
-        return Jwts.parser()
-                .setSigningKey(secret)
+        if (token == null) return "Token non trovato!";
+        return Jwts.parserBuilder()
+                .setSigningKey(this.key)
+                .build()
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
     }
 
-    public String isTokenExpired(String token, String username) throws ExpiredJwtException {
+    public String tokenExpired(String token, String username) throws ExpiredJwtException {
         try {
-            Claims claims = Jwts.parser()
-                    .setSigningKey(secret)
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(this.key)
+                    .build()
                     .parseClaimsJws(token)
                     .getBody();
             String usernameToken = claims.getSubject();
-            if (usernameToken.equals(username)){return "Token valido";}
+            if (usernameToken.equals(username)) {
+                return "Token valido";
+            }
         } catch (Exception e) {
             return "Token non valido";
         }
