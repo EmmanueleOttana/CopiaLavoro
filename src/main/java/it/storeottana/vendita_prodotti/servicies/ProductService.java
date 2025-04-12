@@ -112,7 +112,7 @@ public class ProductService {
 
         if (productR.isEmpty() || adminR.isEmpty()) return "Errore!";
         try {
-            cloudinary.api().deleteResources(Arrays.asList(imageName),
+            cloudinary.api().deleteResources(Arrays.asList("storeottana/"+imageName),
                     ObjectUtils.asMap("type", "upload", "resource_type", "image"));
         } catch (IOException exception) {
             exception.getMessage();
