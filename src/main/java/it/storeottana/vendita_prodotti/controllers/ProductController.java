@@ -43,6 +43,11 @@ public class ProductController {
 
         return productService.updateProduct(idInsertion, files, title, description, price, request);
     }
+    @PutMapping("/deleteImage")
+    public Object deleteImage(@RequestParam long idInsertion, @RequestParam String imageName,
+                              HttpServletRequest request) throws Exception {
+        return productService.deleteImage(idInsertion, imageName, request);
+    }
     @DeleteMapping("delete/{id}")
     public Object deleteInsertion(@PathVariable long id, HttpServletRequest request){
         return productService.deleteProduct(id, request);
