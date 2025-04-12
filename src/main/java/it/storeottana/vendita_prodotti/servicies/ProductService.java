@@ -106,19 +106,24 @@ public class ProductService {
         return true;
     }
 
-    public Object deleteImage(long idInsertion, String imageName, HttpServletRequest request) {
+    public Object deleteImage(long idInsertion, String[] imagesName, HttpServletRequest request) {
         Optional<Product> productR = productRepo.findById(idInsertion);
         Optional<Admin> adminR = adminService.findAdminByRequest(request);
 
         if (productR.isEmpty() || adminR.isEmpty()) return "Errore!";
-        try {
-            cloudinary.api().deleteResources(Arrays.asList("storeottana/"+imageName),
-                    ObjectUtils.asMap("type", "upload", "resource_type", "image"));
-        } catch (IOException exception) {
-            exception.getMessage();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        for (String image : imagesName){
+            try {
+                cloudinary.api().deleteResources(Arrays.asList("storeottana/"+image),
+                        ObjectUtils.asMap("type", "upload", "resource_type", "image"));
+            } catch (IOException exception) {
+                exception.getMessage();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
         return "Immagini modificate";
     }
+
+
+
 }
