@@ -1,5 +1,8 @@
 package it.storeottana.vendita_prodotti.servicies;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.api.ApiResponse;
+import com.cloudinary.utils.ObjectUtils;
 import it.storeottana.vendita_prodotti.entities.Admin;
 import it.storeottana.vendita_prodotti.entities.Product;
 import it.storeottana.vendita_prodotti.repositories.ProductRepo;
@@ -14,7 +17,9 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +34,8 @@ public class ProductService {
     private SmsService smsService;
     @Autowired
     private AdminService adminService;
+    @Autowired
+    private Cloudinary cloudinary;
 
     public List<String> upload(MultipartFile[] files) throws Exception {
         List<String> fileNames = new ArrayList<>();
@@ -99,4 +106,19 @@ public class ProductService {
         return true;
     }
 
+    public Object deleteImage(long idInsertion, String imageName, HttpServletRequest request) {
+        Optional<Product> productR = productRepo.findById(idInsertion);
+        Optional<Admin> adminR = adminService.findAdminByRequest(request);
+
+        if (productR.isEmpty() || adminR.isEmpty()) return "Errore!";
+        try {
+            cloudinary.api().deleteResources(Arrays.asList(imageName),
+                    ObjectUtils.asMap("type", "upload", "resource_type", "image"));
+        } catch (IOException exception) {
+            exception.getMessage();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return "Immagini modificate";
+    }
 }
