@@ -32,6 +32,7 @@ public class AdminController {
     public Object getMyProfile(HttpServletRequest request){
         return adminService.getMyProfile(request);
     }
+
     @PatchMapping("/updateEmail")
     public String updateEmail(HttpServletRequest request, @RequestParam String newEmail){
         return adminService.updateEmail(request, newEmail);
@@ -52,8 +53,10 @@ public class AdminController {
     public List<Admin> getAll(){
         return adminService.getAll();
     }
+
     @DeleteMapping("/delete/{id}")
     public boolean deleteAdmin(@PathVariable long id){
         return adminService.deleteAdmin(id);
     }
+
 }

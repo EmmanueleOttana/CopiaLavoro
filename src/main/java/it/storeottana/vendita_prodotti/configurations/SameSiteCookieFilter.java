@@ -8,12 +8,7 @@ import java.util.Collection;
 
 public class SameSiteCookieFilter implements Filter {
 
-    // Imposta il valore desiderato per SameSite: "None", "Lax" o "Strict"
-    // In questo esempio usiamo "None" per supportare le richieste cross-site (ricorda che con "None" deve essere abilitato Secure)
     private static final String SAME_SITE_VALUE = "Strict";
-
-    // In ambiente di sviluppo potresti voler usare "Lax" se non usi HTTPS
-    // private static final String SAME_SITE_VALUE = "Lax";
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
