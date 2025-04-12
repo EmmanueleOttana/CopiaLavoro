@@ -1,5 +1,6 @@
 package it.storeottana.vendita_prodotti.servicies;
 
+import it.storeottana.vendita_prodotti.entities.Admin;
 import it.storeottana.vendita_prodotti.entities.Cart;
 import it.storeottana.vendita_prodotti.entities.Order;
 import it.storeottana.vendita_prodotti.dto.ProductAndquantity;
@@ -33,6 +34,8 @@ public class OrderService {
     private OrderRepo orderRepo;
     @Autowired
     private AdminRepo adminRepo;
+    @Autowired
+    private AdminService adminService;
     @Autowired
     private EmailService postman;
     @Value("${stripe.secret.key}")
@@ -109,5 +112,13 @@ public class OrderService {
         order.setProductsInCart(orderProducts);
 
         return order;
+    }
+
+    public Object changeOrderState(String orderNumber, StateOfOrder stateOfOrder, HttpServletRequest request) {
+        Optional <Order> orderR = orderRepo.findByOrderNumber(orderNumber);
+        Optional <Admin> adminR = adminService.findAdminByRequest(request);
+        if (orderR.isEmpty() || adminR.isEmpty()) return "Ordine non trovato o non autorizzato!";
+        orderR.get().setStateOfOrder(stateOfOrder);
+        return orderRepo.saveAndFlush(orderR.get());
     }
 }
