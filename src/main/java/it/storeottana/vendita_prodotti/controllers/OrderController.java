@@ -1,5 +1,6 @@
 package it.storeottana.vendita_prodotti.controllers;
 
+import it.storeottana.vendita_prodotti.entities.StateOfOrder;
 import it.storeottana.vendita_prodotti.servicies.OrderService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,11 @@ public class OrderController {
     @GetMapping("/getAll")
     public Object getAll(HttpServletRequest request){
         return orderService.getAll(request);
+    }
+    @PatchMapping("/orderState/{orderNumber}")
+    public Object changeOrderState(@PathVariable String orderNumber, @RequestParam StateOfOrder stateOfOrder,
+                                   HttpServletRequest request){
+        return orderService.changeOrderState(orderNumber, stateOfOrder, request);
     }
     @DeleteMapping("/annul/{orderNumber}")
     public String requestCancellation(@PathVariable String orderNumber){
