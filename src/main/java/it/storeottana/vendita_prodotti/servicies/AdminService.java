@@ -142,4 +142,16 @@ public class AdminService {
         adminRepo.deleteById(id);
         return true;
     }
+
+    public String logoutAdmin(HttpServletRequest request) {
+        Optional <Admin> adminR = adminRepo.findByUsername(tokenJWT.getUsername(request.getHeader("BearerToken")));
+        if (adminR.isEmpty()) return "Utente non trovato!";
+
+        adminR.get().setToken(null);
+        adminR.get().setTimestampToken(null);
+        adminRepo.saveAndFlush(adminR.get());
+
+        return "Logout effettuato!";
+    }
+
 }
