@@ -59,4 +59,9 @@ public class AdminController {
         return adminService.deleteAdmin(id);
     }
 
+    @DeleteMapping("/logout")
+    public String logoutAdmin(HttpServletRequest request){
+        return adminService.logoutAdmin(request);
+    }
+
 }
