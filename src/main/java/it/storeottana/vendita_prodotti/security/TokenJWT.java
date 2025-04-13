@@ -97,7 +97,7 @@ public class TokenJWT {
     public void addTokenToCookie(HttpServletResponse response, String token) {
         ResponseCookie cookie = ResponseCookie.from("guest777token", token)
                 .path("/")
-                .maxAge(60 * 60 * 24 * 6) // 6 giorni
+                .maxAge(60/* * 60 * 24 * 6*/) // 6 giorni
                 .secure(true)   // Il cookie sarà inviato solo su HTTPS
                 .httpOnly(true) // Impedisce accesso JS
                 .sameSite("None") // Permette l'invio cross-site

@@ -43,7 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } else {
             System.out.println("Nessun token trovato nell'header BearerToken");
         }
-        // Ora passa il controllo solo una volta alla catena dei filtri
+
         filterChain.doFilter(request, response);
     }
 
