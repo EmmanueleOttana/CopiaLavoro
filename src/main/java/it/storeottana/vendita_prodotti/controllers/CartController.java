@@ -28,10 +28,12 @@ public class CartController {
     public Object getCart(HttpServletRequest request){
         return cartService.getCart(request);
     }
+
     @DeleteMapping("/empty")
     public String emptyCart(HttpServletRequest request){
         return cartService.emptyCart(request);
     }
+
     @DeleteMapping("/delete/{idProduct}")
     public String deleteProduct(HttpServletRequest request, @PathVariable long idProduct){
         return cartService.deleteProduct(request, idProduct);
