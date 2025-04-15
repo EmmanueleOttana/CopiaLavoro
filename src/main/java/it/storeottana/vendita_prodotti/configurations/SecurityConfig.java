@@ -21,6 +21,7 @@ public class SecurityConfig {
 
     @Autowired
     private TokenJWT tokenJWT;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -46,7 +47,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://127.0.0.1:5500", "http://localhost:3000",
+        configuration.setAllowedOrigins(Arrays.asList("http://127.0.0.1:5500", /*"http://localhost:3000",*/
                                                     "http://www.storeottana.it", "https://www.storeottana.it",
                                                     "http://storeottana.it", "https://storeottana.it"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "DELETE", "OPTIONS", "PATCH", "PUT"));
