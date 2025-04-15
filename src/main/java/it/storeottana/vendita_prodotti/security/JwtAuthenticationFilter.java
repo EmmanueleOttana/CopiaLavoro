@@ -1,5 +1,6 @@
 package it.storeottana.vendita_prodotti.security;
 
+import it.storeottana.vendita_prodotti.entities.Admin;
 import it.storeottana.vendita_prodotti.entities.Cart;
 import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.servlet.FilterChain;
@@ -16,6 +17,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -36,7 +38,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(headerToken)) {
             try {
                 String username = tokenJWT.extractUsername(headerToken);
-                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                if ( tokenJWT.isTokenValid(headerToken, username)
+                        && SecurityContextHolder.getContext().getAuthentication() == null ) {
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(username, null, List.of());
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

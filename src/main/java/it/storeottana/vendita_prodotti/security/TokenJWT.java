@@ -78,9 +78,11 @@ public class TokenJWT {
     public boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
-    public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    public boolean isTokenValid(String token, String username) {
+        final String usernameR = extractUsername(token);
+        Optional <Admin> adminR = adminRepo.findByUsername(usernameR);
+        return adminR.filter(admin -> (usernameR.equals(username) && !isTokenExpired(token) &&
+                admin.getToken() != null && admin.getTimestampToken() != null)).isPresent();
     }
     public String guestUsername () {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
