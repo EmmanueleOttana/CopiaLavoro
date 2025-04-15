@@ -1,5 +1,5 @@
 package it.storeottana.vendita_prodotti.configurations;
-/*
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
@@ -31,5 +31,3 @@ public class CorsConfig {
         };
     }
 }
-
- */
