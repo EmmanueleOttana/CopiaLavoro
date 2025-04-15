@@ -2,34 +2,41 @@ package it.storeottana.vendita_prodotti.security;
 
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.DecodingException;
+import it.storeottana.vendita_prodotti.entities.Admin;
+import it.storeottana.vendita_prodotti.repositories.AdminRepo;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Optional;
 import java.util.Random;
+import java.util.function.Function;
 
 @Component
 public class TokenJWT {
 
     @Value("${jwt.secret}")
     private String secret;
-
-    @Value("${jwt.expiration-ms}")
-    private long validityInMilliseconds;
+    @Autowired
+    private AdminRepo adminRepo;
 
     private Key key;
 
@@ -45,43 +52,35 @@ public class TokenJWT {
     }
 
     public String createToken(String username) {
-        Claims claims = Jwts.claims().setSubject(username);
-        Date now = new Date();
-        Date validity = new Date(now.getTime() + validityInMilliseconds);
+        LocalDateTime endOfDay = LocalDate.now().atTime(23, 59, 59);
+        Date expiration = Date.from(endOfDay.atZone(ZoneId.systemDefault()).toInstant());
 
         return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(validity)
-                .signWith(key, SignatureAlgorithm.HS256)
+                .setSubject(username)
+                .setIssuedAt(new Date())
+                .setExpiration(expiration)
+                .signWith(SignatureAlgorithm.HS256, secret) // Usa la tua chiave segreta
                 .compact();
     }
 
-    public String getUsername(String token) {
-        if (token == null) return "Token non trovato!";
-        return Jwts.parserBuilder()
-                .setSigningKey(this.key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+    public String extractUsername(String token) {
+        return extractAllClaims(token).getSubject();
     }
-
-    public String tokenExpired(String token, String username) throws ExpiredJwtException {
-        try {
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(this.key)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-            String usernameToken = claims.getSubject();
-            if (usernameToken.equals(username)) {
-                return "Token valido";
-            }
-        } catch (Exception e) {
-            return "Token non valido";
-        }
-        return "Errore sconosciuto";
+    private Claims extractAllClaims(String token) {
+        return Jwts.parser()
+                .setSigningKey(secret)
+                .parseClaimsJws(token)
+                .getBody();
+    }
+    public Date extractExpiration(String token) {
+        return extractAllClaims(token).getExpiration();
+    }
+    public boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
+    }
+    public boolean isTokenValid(String token, UserDetails userDetails) {
+        final String username = extractUsername(token);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
     public String guestUsername () {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -97,7 +96,6 @@ public class TokenJWT {
     public void addTokenToCookie(HttpServletResponse response, String token) {
         ResponseCookie cookie = ResponseCookie.from("guest777token", token)
                 .path("/")
-                .maxAge(60/* * 60 * 24 * 6*/) // 6 giorni
                 .secure(true)   // Il cookie sarà inviato solo su HTTPS
                 .httpOnly(true) // Impedisce accesso JS
                 .sameSite("None") // Permette l'invio cross-site
@@ -118,5 +116,26 @@ public class TokenJWT {
         }
         return token;
     }
+    public Optional<Admin> getAdminFromToken(String token){
+        return adminRepo.findByUsername(extractUsername(token));
+    }
+    public boolean checkToken(Admin admin){
+        if (admin.getToken() != null
+        && !admin.getTimestampToken().isBefore(LocalDateTime.now().minusWeeks(1))){
+            return true;
+        }else {
+            admin.setTimestampToken(null);
+            admin.setToken(null);
+            return false;
+        }
+    }
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = Jwts.parser()
+                .setSigningKey(secret)
+                .parseClaimsJws(token)
+                .getBody();
+        return claimsResolver.apply(claims);
+    }
+
 
 }

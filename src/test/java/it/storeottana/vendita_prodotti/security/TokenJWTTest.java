@@ -8,7 +8,7 @@ import java.util.Base64;
 class TokenJWTTest {
 
     @Test
-    void getUsername() {
+    void extractUsername() {
         for (int i = 0; i < 11; i++) {
             SecureRandom secureRandom = new SecureRandom();
             byte[] secretBytes = new byte[36]; //36*8=288 (>256 bits required for HS256)

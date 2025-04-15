@@ -131,7 +131,7 @@ public class AdminService {
     }
 
     public Optional <Admin> findAdminByRequest(HttpServletRequest request){
-        return adminRepo.findByUsername(tokenJWT.getUsername(request.getHeader("BearerToken")));
+        return adminRepo.findByUsername(tokenJWT.extractUsername(request.getHeader("BearerToken")));
     }
 
     public List<Admin> getAll() {
@@ -144,7 +144,7 @@ public class AdminService {
     }
 
     public String logoutAdmin(HttpServletRequest request) {
-        Optional <Admin> adminR = adminRepo.findByUsername(tokenJWT.getUsername(request.getHeader("BearerToken")));
+        Optional <Admin> adminR = adminRepo.findByUsername(tokenJWT.extractUsername(request.getHeader("BearerToken")));
         if (adminR.isEmpty()) return "Utente non trovato!";
 
         adminR.get().setToken(null);

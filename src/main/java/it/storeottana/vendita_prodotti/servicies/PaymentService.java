@@ -68,7 +68,7 @@ public class PaymentService {
             return ResponseEntity.badRequest().body("Token del carrello non trovato nei cookie.");
         }
         // Recupero del carrello tramite il token
-        Optional<Cart> cartOptional = cartRepo.findByUsername(tokenJWT.getUsername(token));
+        Optional<Cart> cartOptional = cartRepo.findByUsername(tokenJWT.extractUsername(token));
         if (cartOptional.isEmpty() || cartOptional.get().getProductAndquantity().isEmpty()) {
             return ResponseEntity.notFound().build();
         }
