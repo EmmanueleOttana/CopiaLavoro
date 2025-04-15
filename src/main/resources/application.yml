@@ -18,8 +18,7 @@ urlSiteWeb: https://storeottana.it
 
 jwt:
   secret: kuRtK3874x8SDPYew6E8K8GHA0pe6LznmF6lfqzuVo9cEXJI
-  expiration-ms: 120000
-vero: 604800000 # 7 giorni in ms
+
 stripe:
   secret:
     key: sk_test_51QxEIQAY23rh6peRdHRWiIJa3K6YijEIhYbWZkDlyVAWIQRtVCuwcYrXxj5e3Rimb4prhRwoXesmxsfCVD3O0Mt000PqSFV4ly

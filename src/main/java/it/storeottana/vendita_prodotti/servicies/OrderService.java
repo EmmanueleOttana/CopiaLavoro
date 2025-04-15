@@ -55,7 +55,7 @@ public class OrderService {
         return OrderR.get();
     }
     public Object getAll(HttpServletRequest request) {
-        String username = tokenJWT.getUsername(request.getHeader("BearerToken"));
+        String username = tokenJWT.extractUsername(request.getHeader("BearerToken"));
         if (adminRepo.findByUsername(username).isEmpty()) return "Errore richiesta!";
         return orderRepo.findAll();
     }
@@ -69,7 +69,7 @@ public class OrderService {
         return "Richiesta d'annullamento inoltrata!";
     }
     public Object orderCancellation(@PathVariable String orderNumber, HttpServletRequest request) {
-        String username = tokenJWT.getUsername(request.getHeader("BearerToken"));
+        String username = tokenJWT.extractUsername(request.getHeader("BearerToken"));
         if (adminRepo.findByUsername(username).isEmpty()) return "Errore richiesta!";
 
         Optional <Order> orderR = orderRepo.findByOrderNumber(orderNumber);

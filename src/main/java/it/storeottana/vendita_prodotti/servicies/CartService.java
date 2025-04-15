@@ -28,8 +28,8 @@ public class CartService {
 
     @Scheduled(cron = "0 0 3 * * ?")
     public void cleanupExpiredCarts() {
-        LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
-        cartRepo.deleteExpiredCarts(oneWeekAgo);
+        LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
+        cartRepo.deleteExpiredCarts(oneMonthAgo);
     }
 
     public String addCart(long idProduct, int quantity, HttpServletRequest request, HttpServletResponse response) {
@@ -37,7 +37,7 @@ public class CartService {
         if (productR.isEmpty()) return "Errore di comunicazione!";
 
         String token = tokenJWT.getTokenFromCookie(request);
-        String username = token != null ? tokenJWT.getUsername(token) : tokenJWT.guestUsername();
+        String username = token != null ? tokenJWT.extractUsername(token) : tokenJWT.guestUsername();
 
         Cart cart = cartRepo.findByUsername(username).orElseGet(() -> {
             Cart newCart = new Cart();
@@ -57,7 +57,7 @@ public class CartService {
     }
     public Object addShippingData(HttpServletRequest request, ShippingData shippingData) {
         String token = tokenJWT.getTokenFromCookie(request);
-        String username = token != null ? tokenJWT.getUsername(token) : tokenJWT.guestUsername();
+        String username = token != null ? tokenJWT.extractUsername(token) : tokenJWT.guestUsername();
 
         Optional <Cart> cartR = cartRepo.findByUsername(username);
         if (cartR.isEmpty() || cartR.get().getProductAndquantity().isEmpty()) return "Carrello vuoto!";
@@ -98,7 +98,7 @@ public class CartService {
         String token = tokenJWT.getTokenFromCookie(request);
         if (token == null) return "Carrello non trovato!";
 
-        Optional <Cart> cartR = cartRepo.findByUsername(tokenJWT.getUsername(token));
+        Optional <Cart> cartR = cartRepo.findByUsername(tokenJWT.extractUsername(token));
         if (cartR.isEmpty()) return "Carrello vuoto!";
 
         return cartR.get();
@@ -107,7 +107,7 @@ public class CartService {
         String token = tokenJWT.getTokenFromCookie(request);
         if (token == null) return "Errore di comunicazione!";
 
-        Optional <Cart> cartR = cartRepo.findByUsername(tokenJWT.getUsername(token));
+        Optional <Cart> cartR = cartRepo.findByUsername(tokenJWT.extractUsername(token));
         cartR.ifPresent(value -> cartRepo.deleteById(value.getId()));
 
         return "Carrello svuotato!";
@@ -117,7 +117,7 @@ public class CartService {
         Optional <Product> productR = productRepo.findById(idProduct);
         if (token == null || productR.isEmpty()) return "Errore di comunicazione!";
 
-        Optional <Cart> cartR = cartRepo.findByUsername(tokenJWT.getUsername(token));
+        Optional <Cart> cartR = cartRepo.findByUsername(tokenJWT.extractUsername(token));
         if (cartR.isPresent()) {
             boolean removed = cartR.get().getProductAndquantity().removeIf(
                     item -> item.getProduct().getId() == idProduct);
@@ -133,7 +133,7 @@ public class CartService {
     }
     public Object changeDeliveryMethod(HttpServletRequest request, OrderPriority orderPriority){
         String token = tokenJWT.getTokenFromCookie(request);
-        Optional <Cart> cartR = cartRepo.findByUsername(tokenJWT.getUsername(token));
+        Optional <Cart> cartR = cartRepo.findByUsername(tokenJWT.extractUsername(token));
         if (cartR.isPresent()) {
             cartR.get().setOrderPriority(orderPriority);
             updateCart(cartR.get());
@@ -143,7 +143,7 @@ public class CartService {
     }
     public Object changeQuantities(long idProduct, int quantity, HttpServletRequest request) {
         String token =  tokenJWT.getTokenFromCookie(request);
-        Optional <Cart> cartR = cartRepo.findByUsername(tokenJWT.getUsername(token));
+        Optional <Cart> cartR = cartRepo.findByUsername(tokenJWT.extractUsername(token));
         Optional <Product> productR = productRepo.findById(idProduct);
 
         if (cartR.isPresent() && productR.isPresent()) {
