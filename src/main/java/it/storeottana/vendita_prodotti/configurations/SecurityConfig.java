@@ -34,9 +34,8 @@ public class SecurityConfig {
                                 "/insertion/deleteAll").authenticated()
                         .anyRequest().permitAll()
                 )
-                // Registra il filtro JWT prima del filtro standard per l’autenticazione
-                .addFilterBefore(new JwtAuthenticationFilter(tokenJWT), UsernamePasswordAuthenticationFilter.class)
-                .httpBasic(Customizer.withDefaults());
+
+                .addFilterBefore(new JwtAuthenticationFilter(tokenJWT), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
