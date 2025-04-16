@@ -81,21 +81,26 @@ public class ProductService {
                                 HttpServletRequest request) throws Exception {
         if (adminService.findAdminByRequest(request).isEmpty()) return "Errore!";
 
-        Product productDB = productRepo.findById(idProduct).get();
+        Product productDB = productRepo.findById(idProduct)
+                .orElseThrow(() -> new Exception("Prodotto non trovato"));
         if (!name.isEmpty()) productDB.setName(name);
         if (!title.isEmpty()) productDB.setTitle(title);
         if (!description.isEmpty()) productDB.setDescription(description);
         if (!String.valueOf(price).isEmpty()) productDB.setPrice(price);
 
-        if (!Objects.requireNonNull(files[0].getOriginalFilename()).isEmpty()) {
-            List<String> newFileNames = upload(files);
-            if (productDB.getFileNames() != null) {
+        if (files != null && files.length > 0) {
+            String firstName = files[0].getOriginalFilename();
+            if (firstName != null && !firstName.isEmpty()) {
+                List<String> newFileNames = upload(files);
+
+                // se non ho mai avuto immagini, inizializzo la lista
+                if (productDB.getFileNames() == null) {
+                    productDB.setFileNames(new ArrayList<>());
+                }
+                // accodo le nuove ai vecchi nomi
                 productDB.getFileNames().addAll(newFileNames);
-            } else {
-                productDB.setFileNames(newFileNames);
             }
         }
-
         productRepo.saveAndFlush(productDB);
         return productDB;
     }
