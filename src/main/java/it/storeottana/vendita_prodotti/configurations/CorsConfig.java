@@ -23,7 +23,7 @@ public class CorsConfig {
                                 "http://storeottana.it",
                                 "https://storeottana.it"
                         )
-                        .allowedMethods("GET", "POST", "PATCH", "DELETE", "OPTIONS")
+                        .allowedMethods("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .exposedHeaders("BearerToken")
                         .allowCredentials(true); // Permetti credenziali, se necessario
