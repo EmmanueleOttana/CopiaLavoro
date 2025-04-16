@@ -37,11 +37,14 @@ public class ProductController {
     }
 
     @PutMapping("/update")
-    public Object update(@RequestParam long idInsertion, @RequestParam MultipartFile[] files,
-                         @RequestParam String title, @RequestParam String description,
-                         @RequestParam double price, HttpServletRequest request) throws Exception {
+    public Object update(@RequestParam long idInsertion,
+                         @RequestParam(required = false) MultipartFile[] files,
+                         @RequestParam(required = false) String name,
+                         @RequestParam(required = false) String title,
+                         @RequestParam(required = false) String description,
+                         @RequestParam(required = false) double price, HttpServletRequest request) throws Exception {
 
-        return productService.updateProduct(idInsertion, files, title, description, price, request);
+        return productService.updateProduct(idInsertion, name, files, title, description, price, request);
     }
     @PutMapping("/deleteImage")
     public Object deleteImage(@RequestParam long idInsertion, @RequestParam String[] imagesName,
