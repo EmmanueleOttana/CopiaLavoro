@@ -79,12 +79,14 @@ public class ProductService {
         return product.orElse(null);
     }
 
-    public Object updateProduct(long idProduct, MultipartFile[] files, String title, String description, double price,
+    public Object updateProduct(long idProduct, String name, MultipartFile[] files, String title,
+                                String description, double price,
                                 HttpServletRequest request) throws Exception {
         if (adminService.findAdminByRequest(request).isEmpty()) return "Errore!";
 
         Product productDB = productRepo.findById(idProduct).get();
         if (!files[0].getOriginalFilename().isEmpty()) productDB.setFileNames(upload(files));
+        if (!name.isEmpty()) productDB.setName(name);
         if (!title.isEmpty()) productDB.setTitle(title);
         if (!description.isEmpty()) productDB.setDescription(description);
         if (!String.valueOf(price).isEmpty()) productDB.setPrice(price);
