@@ -18,10 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class ProductService {
@@ -85,11 +82,19 @@ public class ProductService {
         if (adminService.findAdminByRequest(request).isEmpty()) return "Errore!";
 
         Product productDB = productRepo.findById(idProduct).get();
-        if (!files[0].getOriginalFilename().isEmpty()) productDB.setFileNames(upload(files));
         if (!name.isEmpty()) productDB.setName(name);
         if (!title.isEmpty()) productDB.setTitle(title);
         if (!description.isEmpty()) productDB.setDescription(description);
         if (!String.valueOf(price).isEmpty()) productDB.setPrice(price);
+
+        if (!Objects.requireNonNull(files[0].getOriginalFilename()).isEmpty()) {
+            List<String> newFileNames = upload(files);
+            if (productDB.getFileNames() != null) {
+                productDB.getFileNames().addAll(newFileNames);
+            } else {
+                productDB.setFileNames(newFileNames);
+            }
+        }
 
         productRepo.saveAndFlush(productDB);
         return productDB;
