@@ -76,8 +76,8 @@ public class ProductService {
         return product.orElse(null);
     }
 
-    public Object updateProduct(long idProduct, String name, MultipartFile[] files, String title,
-                                String description, double price,
+    public Object updateProduct(long idProduct, String name, List<String> orderedFileNames,
+                                String title, String description, double price,
                                 HttpServletRequest request) throws Exception {
         if (adminService.findAdminByRequest(request).isEmpty()) return "Errore!";
 
@@ -88,21 +88,25 @@ public class ProductService {
         if (!description.isEmpty()) productDB.setDescription(description);
         if (!String.valueOf(price).isEmpty()) productDB.setPrice(price);
 
-        if (files != null && files.length > 0) {
-            String firstName = files[0].getOriginalFilename();
-            if (firstName != null && !firstName.isEmpty()) {
-                List<String> newFileNames = upload(files);
-
-                // se non ho mai avuto immagini, inizializzo la lista
-                if (productDB.getFileNames() == null) {
-                    productDB.setFileNames(new ArrayList<>());
-                }
-                // accodo le nuove ai vecchi nomi
-                productDB.getFileNames().addAll(newFileNames);
-            }
+        if (orderedFileNames != null && !orderedFileNames.isEmpty()) {
+            productDB.setFileNames(new ArrayList<>(orderedFileNames));
         }
+
         productRepo.saveAndFlush(productDB);
         return productDB;
+    }
+    public List<String> addImages(MultipartFile[] files, long idProduct, HttpServletRequest request) throws Exception {
+        adminService.findAdminByRequest(request)
+                .orElseThrow(() -> new Exception("Non autorizzato!"));
+        Product productDB = productRepo.findById(idProduct)
+                .orElseThrow(() -> new Exception("Prodotto non trovato"));
+
+        List<String> newFileNames = upload(files);
+
+        productDB.getFileNames().addAll(newFileNames);
+        productRepo.saveAndFlush(productDB);
+        return productDB.getFileNames();
+
     }
 
     public Object deleteProduct(long idProduct, HttpServletRequest request){
