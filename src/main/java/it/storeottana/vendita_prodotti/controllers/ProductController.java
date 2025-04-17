@@ -62,8 +62,8 @@ public class ProductController {
         return productService.deleteProduct(id, request);
     }
     @DeleteMapping("/deleteAll")
-    public boolean deleteAllInsertion(HttpServletRequest request) throws Exception {
-        return productService.deleteAllProducts(request);
+    public boolean deleteAllInsertion(HttpServletRequest request, @RequestParam String bossCode) throws Exception {
+        return productService.deleteAllProducts(request, bossCode);
     }
 
 }

@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,6 +38,8 @@ public class ProductService {
     private AdminService adminService;
     @Autowired
     private Cloudinary cloudinary;
+    @Value("${bossCode}")
+    private String bossCode;
 
     public List<String> upload(MultipartFile[] files) throws Exception {
         List<String> fileNames = new ArrayList<>();
@@ -131,8 +134,9 @@ public class ProductService {
         productRepo.deleteById(idProduct);
         return true;
     }
-    public boolean deleteAllProducts(HttpServletRequest request) throws Exception {
+    public boolean deleteAllProducts(HttpServletRequest request, String bossCode) throws Exception {
         adminService.findAdminByRequest(request).orElseThrow(() -> new Exception("Non autorizzato!"));
+        if (!this.bossCode.equals(bossCode)) throw new Exception("Non autorizzato!");
 
         List<Product> products = productRepo.findAll();
         for (Product product : products) {
