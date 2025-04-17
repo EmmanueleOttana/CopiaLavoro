@@ -47,9 +47,9 @@ public class AdminService {
                 "\nConfermare l'indirizzo email per attivarlo";
     }
 
-    public String activeAccount(long id, String activationCode){
+    public String activeAccount(long id, String activationCode) throws Exception {
         Optional <Admin> admin1 = adminRepo.findById(id);
-        if (admin1.isEmpty()) return "Errore comunicazione";
+        admin1.orElseThrow(() -> new Exception("Non autorizzato!"));
 
         Admin admin = admin1.get();
         if (admin.getActivationCode().equals(activationCode)){
@@ -80,9 +80,9 @@ public class AdminService {
         }else return "Pagina non trovata!";
     }
 
-    public String updateEmail(HttpServletRequest request, String newEmail) {
+    public String updateEmail(HttpServletRequest request, String newEmail) throws Exception {
         Optional <Admin> adminJwt = findAdminByRequest(request);
-        if (adminJwt.isEmpty()) return "Errore comunicazione";
+        adminJwt.orElseThrow(() -> new Exception("Non autorizzato!"));
 
         Admin admin = adminJwt.get();
         if (!newEmail.isEmpty()){
@@ -95,9 +95,9 @@ public class AdminService {
         }else return "Impossibile inserire questa email!";
     }
 
-    public String acceptNewEmail(long id, String newEmail) {
+    public String acceptNewEmail(long id, String newEmail) throws Exception {
         Optional <Admin> adminJwt = adminRepo.findById(id);
-        if (adminJwt.isEmpty()) return "Errore comunicazione";
+        adminJwt.orElseThrow(() -> new Exception("Non autorizzato!"));
 
         Admin admin = adminJwt.get();
         admin.setEmail(newEmail);
@@ -108,7 +108,7 @@ public class AdminService {
 
     public String updateTelephoneNumber(HttpServletRequest request, String telephoneNumber) throws Exception {
         Optional <Admin> adminJwt = findAdminByRequest(request);
-        if (adminJwt.isEmpty()) return "Errore comunicazione";
+        adminJwt.orElseThrow(() -> new Exception("Non autorizzato!"));
 
         Admin admin = adminJwt.get();
         if (!telephoneNumber.isEmpty()){
@@ -121,9 +121,9 @@ public class AdminService {
         }else return "Impossibile inserire questa email!";
     }
 
-    public Object acceptNewTelephoneNumber(long id, String newTelephoneNumber) {
+    public Admin acceptNewTelephoneNumber(long id, String newTelephoneNumber) throws Exception {
         Optional <Admin> adminJwt = adminRepo.findById(id);
-        if (adminJwt.isEmpty()) return "Errore comunicazione";
+        adminJwt.orElseThrow(() -> new Exception("Non autorizzato!"));
 
         Admin admin = adminJwt.get();
         admin.setTelephoneNumber(newTelephoneNumber);
@@ -143,9 +143,9 @@ public class AdminService {
         return true;
     }
 
-    public String logoutAdmin(HttpServletRequest request) {
+    public String logoutAdmin(HttpServletRequest request) throws Exception {
         Optional <Admin> adminR = adminRepo.findByUsername(tokenJWT.extractUsername(request.getHeader("BearerToken")));
-        if (adminR.isEmpty()) return "Utente non trovato!";
+        adminR.orElseThrow(() -> new Exception("Non autorizzato!"));
 
         adminR.get().setToken(null);
         adminR.get().setTimestampToken(null);

@@ -17,15 +17,15 @@ public class CartController {
 
     @PostMapping("/add/{idProduct}/{quantity}")
     public String addCart(@PathVariable long idProduct, @PathVariable int quantity,
-                          HttpServletRequest request, HttpServletResponse response){
+                          HttpServletRequest request, HttpServletResponse response) throws Exception {
         return cartService.addCart(idProduct, quantity, request, response);
     }
     @PatchMapping("/addShippingData")
-    public Object addShippingData(HttpServletRequest request, @RequestBody ShippingData shippingData){
+    public boolean addShippingData(HttpServletRequest request, @RequestBody ShippingData shippingData) throws Exception {
         return cartService.addShippingData(request, shippingData);
     }
     @GetMapping("/get")
-    public Object getCart(HttpServletRequest request){
+    public Object getCart(HttpServletRequest request) throws Exception {
         return cartService.getCart(request);
     }
 
@@ -35,7 +35,7 @@ public class CartController {
     }
 
     @DeleteMapping("/delete/{idProduct}")
-    public String deleteProduct(HttpServletRequest request, @PathVariable long idProduct){
+    public String deleteProduct(HttpServletRequest request, @PathVariable long idProduct) throws Exception {
         return cartService.deleteProduct(request, idProduct);
     }
     @PatchMapping("/delivery")

@@ -53,16 +53,16 @@ public class ProductController {
         return productService.addImages(files,idInsertion,request);
     }
     @PutMapping("/deleteImage")
-    public Object deleteImage(@RequestParam long idInsertion, @RequestParam String[] imagesName,
+    public Object deleteImage(@RequestParam long idInsertion, @RequestParam String imagesName,
                               HttpServletRequest request) throws Exception {
         return productService.deleteImage(idInsertion, imagesName, request);
     }
     @DeleteMapping("delete/{id}")
-    public Object deleteInsertion(@PathVariable long id, HttpServletRequest request){
+    public boolean deleteInsertion(@PathVariable long id, HttpServletRequest request) throws Exception {
         return productService.deleteProduct(id, request);
     }
     @DeleteMapping("deleteAll")
-    public Object deleteAllInsertion(HttpServletRequest request){
+    public boolean deleteAllInsertion(HttpServletRequest request) throws Exception {
         return productService.deleteAllProducts(request);
     }
 

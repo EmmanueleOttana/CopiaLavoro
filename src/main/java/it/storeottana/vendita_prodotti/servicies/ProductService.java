@@ -79,7 +79,7 @@ public class ProductService {
     public Object updateProduct(long idProduct, String name, List<String> orderedFileNames,
                                 String title, String description, double price,
                                 HttpServletRequest request) throws Exception {
-        if (adminService.findAdminByRequest(request).isEmpty()) return "Errore!";
+        adminService.findAdminByRequest(request).orElseThrow(() -> new Exception("Non autorizzato!"));
 
         Product productDB = productRepo.findById(idProduct)
                 .orElseThrow(() -> new Exception("Prodotto non trovato"));
@@ -107,37 +107,38 @@ public class ProductService {
         return productDB.getFileNames();
     }
 
-    public Object deleteProduct(long idProduct, HttpServletRequest request){
-        if (adminService.findAdminByRequest(request).isEmpty()) return "Errore!";
+    public boolean deleteProduct(long idProduct, HttpServletRequest request) throws Exception {
+        adminService.findAdminByRequest(request).orElseThrow(() -> new Exception("Non autorizzato!"));
 
         productRepo.deleteById(idProduct);
         return true;
     }
-    public Object deleteAllProducts(HttpServletRequest request){
-        if (adminService.findAdminByRequest(request).isEmpty()) return "Errore!";
+    public boolean deleteAllProducts(HttpServletRequest request) throws Exception {
+        adminService.findAdminByRequest(request).orElseThrow(() -> new Exception("Non autorizzato!"));
 
         productRepo.deleteAll();
         return true;
     }
 
-    public Object deleteImage(long idInsertion, String[] imagesName, HttpServletRequest request) {
+    public String deleteImage(long idInsertion, String imagesName, HttpServletRequest request) throws Exception {
         Optional<Product> productR = productRepo.findById(idInsertion);
         Optional<Admin> adminR = adminService.findAdminByRequest(request);
 
-        if (productR.isEmpty() || adminR.isEmpty()) return "Errore!";
-        for (String image : imagesName){
+        productR.orElseThrow(() -> new Exception("Prodotto non trovato!"));
+        adminR.orElseThrow(() -> new Exception("Non autorizzato!"));
             try {
-                cloudinary.api().deleteResources(Arrays.asList("storeottana/"+image),
+                String cleanName = imagesName.substring(0, imagesName.lastIndexOf('.'));
+                cloudinary.api().deleteResources(Arrays.asList("storeottana/"+cleanName),
                         ObjectUtils.asMap("type", "upload", "resource_type", "image"));
             } catch (IOException exception) {
                 exception.getMessage();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-        }
+            productR.get().getFileNames().remove(imagesName);
+            productRepo.saveAndFlush(productR.get());
         return "Immagini modificate";
     }
-
 
 
 }

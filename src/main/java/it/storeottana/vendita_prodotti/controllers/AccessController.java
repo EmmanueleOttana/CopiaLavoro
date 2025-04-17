@@ -22,7 +22,7 @@ public class AccessController {
         return accessService.forgotPW(email);
     }
     @PatchMapping("/resetpw/{id}")
-    public String resetPw(@RequestParam String newPW, @PathVariable long id) {
+    public String resetPw(@RequestParam String newPW, @PathVariable long id) throws Exception {
         return accessService.resetPw(newPW, id);
     }
 

@@ -49,31 +49,31 @@ public class OrderService {
         return "ORD-" + Instant.now().toEpochMilli();
     }
 
-    public Object getOrder(String orderNumber) {
+    public Order getOrder(String orderNumber) throws Exception {
         Optional <Order> OrderR = orderRepo.findByOrderNumber(orderNumber);
-        if (OrderR.isEmpty()) return "Numero ordine non trovato!";
+        OrderR.orElseThrow(() -> new Exception("Ordine non trovato!"));
         return OrderR.get();
     }
-    public Object getAll(HttpServletRequest request) {
+    public List<Order> getAll(HttpServletRequest request) throws Exception {
         String username = tokenJWT.extractUsername(request.getHeader("BearerToken"));
-        if (adminRepo.findByUsername(username).isEmpty()) return "Errore richiesta!";
+        adminRepo.findByUsername(username).orElseThrow(() -> new Exception("Non autorizzato!"));
         return orderRepo.findAll();
     }
-    public String requestCancellation(String orderNumber) {
+    public String requestCancellation(String orderNumber) throws Exception {
         Optional <Order> orderR = orderRepo.findByOrderNumber(orderNumber);
-        if (orderR.isEmpty()) return "Ordine non trovato!";
+        orderR.orElseThrow(() -> new Exception("Ordine non trovato!"));
 
         postman.sendMail(companyEmail,"Richiesta d'annullamento",
                 "É stato richiesto l'annullamento dell'ordine numero: "+orderNumber);
 
         return "Richiesta d'annullamento inoltrata!";
     }
-    public Object orderCancellation(@PathVariable String orderNumber, HttpServletRequest request) {
+    public String orderCancellation(@PathVariable String orderNumber, HttpServletRequest request) throws Exception {
         String username = tokenJWT.extractUsername(request.getHeader("BearerToken"));
-        if (adminRepo.findByUsername(username).isEmpty()) return "Errore richiesta!";
+        adminRepo.findByUsername(username).orElseThrow(() -> new Exception("Non autorizzato!"));
 
         Optional <Order> orderR = orderRepo.findByOrderNumber(orderNumber);
-        if (orderR.isEmpty()) return "Ordine non trovato!";
+        orderR.orElseThrow(() -> new Exception("Ordine non trovato!"));
 
         orderR.get().setStateOfOrder(StateOfOrder.CANCELED);
         orderRepo.saveAndFlush(orderR.get());
@@ -114,10 +114,11 @@ public class OrderService {
         return order;
     }
 
-    public Object changeOrderState(String orderNumber, StateOfOrder stateOfOrder, HttpServletRequest request) {
+    public Order changeOrderState(String orderNumber, StateOfOrder stateOfOrder, HttpServletRequest request) throws Exception {
         Optional <Order> orderR = orderRepo.findByOrderNumber(orderNumber);
         Optional <Admin> adminR = adminService.findAdminByRequest(request);
-        if (orderR.isEmpty() || adminR.isEmpty()) return "Ordine non trovato o non autorizzato!";
+        orderR.orElseThrow(() -> new Exception("Ordine non trovato!"));
+        adminR.orElseThrow(() -> new Exception("Non autorizzato!"));
         orderR.get().setStateOfOrder(stateOfOrder);
         return orderRepo.saveAndFlush(orderR.get());
     }
