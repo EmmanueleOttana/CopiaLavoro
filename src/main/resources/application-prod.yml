@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://dpg-cvrom10gjchc73betgjg-a/venditaprodotti_db
-    username: venditaprodotti_db_user
-    password: gon1yrA01EhVmDv5CdvZdycIBOd5MUBV
+    url: jdbc:postgresql://dpg-d00n59i4d50c73cg65l0-a/venditaprodotti_db_hu9p
+    username: venditaprodotti_db_hu9p_user
+    password: VLUC5HWZND3w2EAaToEl2Yzg7hlSZiU6
   jpa:
     database: postgresql
     show-sql: true
