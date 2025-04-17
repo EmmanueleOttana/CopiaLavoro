@@ -38,13 +38,19 @@ public class ProductController {
 
     @PutMapping("/update")
     public Object update(@RequestParam long idInsertion,
-                         @RequestParam(required = false) MultipartFile[] files,
+                         @RequestParam(required = false) List<String> orderedFileNames,
                          @RequestParam(required = false) String name,
                          @RequestParam(required = false) String title,
                          @RequestParam(required = false) String description,
                          @RequestParam(required = false) double price, HttpServletRequest request) throws Exception {
 
-        return productService.updateProduct(idInsertion, name, files, title, description, price, request);
+        return productService.updateProduct(idInsertion, name, orderedFileNames, title, description, price, request);
+    }
+    @PatchMapping("/addImages")
+    public List<String> addImages(@RequestParam MultipartFile[] files,
+                                  @RequestParam long idInsertion,
+                                  HttpServletRequest request) throws Exception {
+        return productService.addImages(files,idInsertion,request);
     }
     @PutMapping("/deleteImage")
     public Object deleteImage(@RequestParam long idInsertion, @RequestParam String[] imagesName,
