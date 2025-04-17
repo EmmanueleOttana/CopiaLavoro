@@ -4,7 +4,9 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.api.ApiResponse;
 import com.cloudinary.utils.ObjectUtils;
 import it.storeottana.vendita_prodotti.entities.Admin;
+import it.storeottana.vendita_prodotti.entities.Cart;
 import it.storeottana.vendita_prodotti.entities.Product;
+import it.storeottana.vendita_prodotti.repositories.CartRepo;
 import it.storeottana.vendita_prodotti.repositories.ProductRepo;
 import it.storeottana.vendita_prodotti.utils.FileStorageService;
 import it.storeottana.vendita_prodotti.utils.SmsService;
@@ -27,6 +29,8 @@ public class ProductService {
     private FileStorageService fileStorageService;
     @Autowired
     private ProductRepo productRepo;
+    @Autowired
+    private CartService cartService;
     @Autowired
     private SmsService smsService;
     @Autowired
@@ -109,13 +113,42 @@ public class ProductService {
 
     public boolean deleteProduct(long idProduct, HttpServletRequest request) throws Exception {
         adminService.findAdminByRequest(request).orElseThrow(() -> new Exception("Non autorizzato!"));
+        Product product = productRepo.findById(idProduct).orElseThrow(() -> new Exception("Prodotto non trovato!"));
 
+        List<String> names = product.getFileNames();
+        for (int i = 0; i < names.size(); i++) {
+            try {
+                String cleanName = names.get(i).substring(0, names.get(i).lastIndexOf('.'));
+                cloudinary.api().deleteResources(Arrays.asList("storeottana/"+cleanName),
+                        ObjectUtils.asMap("type", "upload", "resource_type", "image"));
+            } catch (IOException exception) {
+                exception.getMessage();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        cartService.deleteProducedByCarts(idProduct);
         productRepo.deleteById(idProduct);
         return true;
     }
     public boolean deleteAllProducts(HttpServletRequest request) throws Exception {
         adminService.findAdminByRequest(request).orElseThrow(() -> new Exception("Non autorizzato!"));
 
+        List<Product> products = productRepo.findAll();
+        for (Product product : products) {
+            for (String name : product.getFileNames()) {
+                try {
+                    String cleanName = name.substring(0, name.lastIndexOf('.'));
+                    cloudinary.api().deleteResources(Arrays.asList("storeottana/" + cleanName),
+                            ObjectUtils.asMap("type", "upload", "resource_type", "image"));
+                } catch (IOException exception) {
+                    exception.getMessage();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        cartService.deleteAll();
         productRepo.deleteAll();
         return true;
     }

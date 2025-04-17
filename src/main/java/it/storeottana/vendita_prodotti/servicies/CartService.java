@@ -154,5 +154,22 @@ public class CartService {
         }
         return "Errore comunicazione!";
     }
+    public void deleteProducedByCarts(long idProduct){
+        List<Cart> carts = cartRepo.findAll();
+        for (Cart cart : carts){
+            for (int i = 0; i < cart.getProductAndquantity().size(); i++) {
+                Product pr = cart.getProductAndquantity().get(i).getProduct();
+                if (pr.getId() == idProduct){
+                    cart.getProductAndquantity().remove(i);
+                    updateCart(cart);
+                    cartRepo.saveAndFlush(cart);
+                }
+            }
+        }
+
+    }
+    public void deleteAll(){
+        cartRepo.deleteAll();
+    }
 
 }
