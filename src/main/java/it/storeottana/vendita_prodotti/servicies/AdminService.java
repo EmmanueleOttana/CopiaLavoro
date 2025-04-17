@@ -10,6 +10,7 @@ import it.storeottana.vendita_prodotti.utils.SmsService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,6 +32,11 @@ public class AdminService {
     private String urlBackend;
     @Value("${companyEmail}")
     private String companyEmail;
+
+    @Scheduled(cron = "0 0 3 * * ?")
+    public void cleanAdmin() {
+        adminRepo.deleteByIsActiveFalse();
+    }
 
     public String registration(AdminRequest adminRequest) throws Exception {
         if (!adminRequest.getAuthCode().equals(this.authCode)) return "Richiesta inviata! Attendi che ti venga consentito l'accesso.";
