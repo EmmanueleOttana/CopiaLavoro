@@ -104,9 +104,7 @@ public class ProductService {
         List<String> newFileNames = upload(files);
 
         productDB.getFileNames().addAll(newFileNames);
-        productRepo.saveAndFlush(productDB);
         return productDB.getFileNames();
-
     }
 
     public Object deleteProduct(long idProduct, HttpServletRequest request){
