@@ -57,11 +57,11 @@ public class ProductController {
                               HttpServletRequest request) throws Exception {
         return productService.deleteImage(idInsertion, imagesName, request);
     }
-    @DeleteMapping("delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public boolean deleteInsertion(@PathVariable long id, HttpServletRequest request) throws Exception {
         return productService.deleteProduct(id, request);
     }
-    @DeleteMapping("deleteAll")
+    @DeleteMapping("/deleteAll")
     public boolean deleteAllInsertion(HttpServletRequest request) throws Exception {
         return productService.deleteAllProducts(request);
     }
