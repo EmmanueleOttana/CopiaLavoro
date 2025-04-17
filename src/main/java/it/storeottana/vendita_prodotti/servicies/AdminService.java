@@ -40,6 +40,8 @@ public class AdminService {
 
     public String registration(AdminRequest adminRequest) throws Exception {
         if (!adminRequest.getAuthCode().equals(this.authCode)) return "Richiesta inviata! Attendi che ti venga consentito l'accesso.";
+        if (adminRepo.findByUsername(adminRequest.getUsername()).isPresent()) return "Username già esistente!";
+        if (adminRepo.findByUsername(adminRequest.getEmail()).isPresent()) return "Email già registrata!";
 
         Admin adminNew = new Admin(adminRequest.getUsername(), adminRequest.getEmail(),
                 adminRequest.getTelephoneNumber(), EncryptionPw.hashPassword(adminRequest.getPassword()));
