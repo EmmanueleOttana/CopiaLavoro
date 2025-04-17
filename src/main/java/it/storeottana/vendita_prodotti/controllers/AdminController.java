@@ -20,7 +20,7 @@ public class AdminController {
         return adminService.registration(adminRequest);
     }
     @PatchMapping("/activeAccount/{id}/{activationCode}")
-    public String activeAccount(@PathVariable long id, @PathVariable String activationCode){
+    public String activeAccount(@PathVariable long id, @PathVariable String activationCode) throws Exception {
         return adminService.activeAccount(id, activationCode);
     }
     @PatchMapping("/acceptance/{id}")
@@ -34,11 +34,11 @@ public class AdminController {
     }
 
     @PatchMapping("/updateEmail")
-    public String updateEmail(HttpServletRequest request, @RequestParam String newEmail){
+    public String updateEmail(HttpServletRequest request, @RequestParam String newEmail) throws Exception {
         return adminService.updateEmail(request, newEmail);
     }
     @PatchMapping("/newEmail/{id}/{newEmail}")
-    public String acceptNewEmail(@PathVariable long id, @PathVariable String newEmail){
+    public String acceptNewEmail(@PathVariable long id, @PathVariable String newEmail) throws Exception {
         return adminService.acceptNewEmail(id, newEmail);
     }
     @PatchMapping("/updTelNum")
@@ -46,7 +46,7 @@ public class AdminController {
         return adminService.updateTelephoneNumber(request, telephoneNumber);
     }
     @PatchMapping("/newTelNum/{id}/{newEmail}")
-    public Object acceptTelephoneNum(@PathVariable long id, @PathVariable String telephoneNumber){
+    public Admin acceptTelephoneNum(@PathVariable long id, @PathVariable String telephoneNumber) throws Exception {
         return adminService.acceptNewTelephoneNumber(id, telephoneNumber);
     }
     @GetMapping("/getAll")
@@ -60,7 +60,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/logout")
-    public String logoutAdmin(HttpServletRequest request){
+    public String logoutAdmin(HttpServletRequest request) throws Exception {
         return adminService.logoutAdmin(request);
     }
 

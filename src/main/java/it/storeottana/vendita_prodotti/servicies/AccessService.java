@@ -57,9 +57,9 @@ public class AccessService {
             return "É stato tentato l'invio dell'email di reset";
         }
     }
-    public String resetPw(String newPW, long id) {
+    public String resetPw(String newPW, long id) throws Exception {
         Optional <Admin> admin = adminRepo.findById(id);
-        if (admin.isEmpty()) return "Errore comunicazione";
+        admin.orElseThrow(() -> new Exception("Non autorizzato!"));
         Admin adminDB = admin.get();
         if (adminDB.isSuspended()) {
             adminDB.setPassword(EncryptionPw.hashPassword(newPW));

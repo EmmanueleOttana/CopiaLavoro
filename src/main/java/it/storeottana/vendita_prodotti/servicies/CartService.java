@@ -32,9 +32,9 @@ public class CartService {
         cartRepo.deleteExpiredCarts(oneMonthAgo);
     }
 
-    public String addCart(long idProduct, int quantity, HttpServletRequest request, HttpServletResponse response) {
+    public String addCart(long idProduct, int quantity, HttpServletRequest request, HttpServletResponse response) throws Exception {
         Optional<Product> productR = productRepo.findById(idProduct);
-        if (productR.isEmpty()) return "Errore di comunicazione!";
+        productR.orElseThrow(() -> new Exception("Prodotto non trovato"));
 
         String token = tokenJWT.getTokenFromCookie(request);
         String username = token != null ? tokenJWT.extractUsername(token) : tokenJWT.guestUsername();
@@ -50,17 +50,16 @@ public class CartService {
             addProducts(cart, productR.get(), quantity);
         }
 
-        // Assicura che il token sia sempre aggiornato nel cookie
         tokenJWT.addTokenToCookie(response, cart.getToken());
 
         return "Prodotto aggiunto!";
     }
-    public Object addShippingData(HttpServletRequest request, ShippingData shippingData) {
+    public boolean addShippingData(HttpServletRequest request, ShippingData shippingData) throws Exception {
         String token = tokenJWT.getTokenFromCookie(request);
         String username = token != null ? tokenJWT.extractUsername(token) : tokenJWT.guestUsername();
 
         Optional <Cart> cartR = cartRepo.findByUsername(username);
-        if (cartR.isEmpty() || cartR.get().getProductAndquantity().isEmpty()) return "Carrello vuoto!";
+        if (cartR.isEmpty() || cartR.get().getProductAndquantity().isEmpty()) throw new Exception("Carrello o prodotto non trovato!");
 
         cartR.get().setShippingData(shippingData);
         cartRepo.saveAndFlush(cartR.get());
@@ -94,12 +93,12 @@ public class CartService {
         }
         cart.setTotalCost(totalCost + cart.getOrderPriority().calculateShippingCost(totalCost));
     }
-    public Object getCart(HttpServletRequest request){
+    public Object getCart(HttpServletRequest request) throws Exception {
         String token = tokenJWT.getTokenFromCookie(request);
-        if (token == null) return "Carrello non trovato!";
+        if (token == null) return "Token non trovato!";
 
         Optional <Cart> cartR = cartRepo.findByUsername(tokenJWT.extractUsername(token));
-        if (cartR.isEmpty()) return "Carrello vuoto!";
+        cartR.orElseThrow(() -> new Exception("Carrerllo non trovato!"));
 
         return cartR.get();
     }
@@ -112,10 +111,10 @@ public class CartService {
 
         return "Carrello svuotato!";
     }
-    public String deleteProduct(HttpServletRequest request, long idProduct) {
+    public String deleteProduct(HttpServletRequest request, long idProduct) throws Exception {
         String token = tokenJWT.getTokenFromCookie(request);
         Optional <Product> productR = productRepo.findById(idProduct);
-        if (token == null || productR.isEmpty()) return "Errore di comunicazione!";
+        if (token == null || productR.isEmpty()) throw new Exception("Token o prodotto non trovato!");
 
         Optional <Cart> cartR = cartRepo.findByUsername(tokenJWT.extractUsername(token));
         if (cartR.isPresent()) {
