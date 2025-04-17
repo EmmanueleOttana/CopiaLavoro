@@ -10,5 +10,6 @@ import java.util.Optional;
 public interface AdminRepo extends JpaRepository<Admin, Long> {
     Optional <Admin> findByEmail(String email);
     Optional <Admin> findByUsername(String username);
+    Optional <Admin> findByTelephoneNumber(String telephoneNumber);
     void deleteByIsActiveFalse();
 }
