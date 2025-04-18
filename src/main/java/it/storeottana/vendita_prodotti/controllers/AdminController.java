@@ -50,13 +50,13 @@ public class AdminController {
         return adminService.acceptNewTelephoneNumber(id, telephoneNumber);
     }
     @GetMapping("/getAll")
-    public List<Admin> getAll(){
-        return adminService.getAll();
+    public List<Admin> getAll(HttpServletRequest request) throws Exception {
+        return adminService.getAll(request);
     }
 
     @DeleteMapping("/delete/{id}")
-    public boolean deleteAdmin(@PathVariable long id){
-        return adminService.deleteAdmin(id);
+    public boolean deleteAdmin(@PathVariable long id, @RequestParam String bossCode, HttpServletRequest request) throws Exception {
+        return adminService.deleteAdmin(id, bossCode, request);
     }
 
     @DeleteMapping("/logout")

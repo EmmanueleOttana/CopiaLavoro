@@ -33,6 +33,8 @@ public class AdminService {
     private String urlSiteWeb;
     @Value("${companyEmail}")
     private String companyEmail;
+    @Value("${bossCode}")
+    private String bossCode;
 
     @Scheduled(cron = "0 0 3 * * ?")
     public void cleanAdmin() {
@@ -144,17 +146,24 @@ public class AdminService {
         return adminRepo.findByUsername(tokenJWT.extractUsername(request.getHeader("BearerToken")));
     }
 
-    public List<Admin> getAll() {
+    public List<Admin> getAll(HttpServletRequest request) throws Exception {
+        Optional <Admin> adminJwt = findAdminByRequest(request);
+        adminJwt.orElseThrow(() -> new Exception("Non autorizzato!"));
+
         return adminRepo.findAll();
     }
 
-    public boolean deleteAdmin(long id) {
+    public boolean deleteAdmin(long id, String bossCode, HttpServletRequest request) throws Exception {
+        Optional <Admin> adminR = findAdminByRequest(request);
+        adminR.orElseThrow(() -> new Exception("Non autorizzato!"));
+        if (!this.bossCode.equals(bossCode)) throw new Exception("Non autorizzato!");
+
         adminRepo.deleteById(id);
         return true;
     }
 
     public String logoutAdmin(HttpServletRequest request) throws Exception {
-        Optional <Admin> adminR = adminRepo.findByUsername(tokenJWT.extractUsername(request.getHeader("BearerToken")));
+        Optional <Admin> adminR = findAdminByRequest(request);
         adminR.orElseThrow(() -> new Exception("Non autorizzato!"));
 
         adminR.get().setToken(null);
