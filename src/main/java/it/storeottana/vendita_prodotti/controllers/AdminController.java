@@ -45,7 +45,7 @@ public class AdminController {
     public String updateTelephoneNum(HttpServletRequest request, @RequestParam String telephoneNumber) throws Exception {
         return adminService.updateTelephoneNumber(request, telephoneNumber);
     }
-    @PatchMapping("/newTelNum/{id}/{newEmail}")
+    @PatchMapping("/new-tel-num/{id}/{telephoneNumber}")
     public Admin acceptTelephoneNum(@PathVariable long id, @PathVariable String telephoneNumber) throws Exception {
         return adminService.acceptNewTelephoneNumber(id, telephoneNumber);
     }

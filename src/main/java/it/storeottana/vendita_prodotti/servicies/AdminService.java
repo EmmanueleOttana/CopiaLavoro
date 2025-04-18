@@ -125,7 +125,8 @@ public class AdminService {
         if (!telephoneNumber.isEmpty()){
             this.postman.sendMail(admin.getEmail(),"Cambio numero di telefono",
                 "Per modificare il numero di telefono cliccare nel link a sottostante:\n" +
-                        urlSiteWeb+"/admin/new-tel-num/"+admin.getId()+"/"+telephoneNumber);
+                        urlSiteWeb+"/admin/new-tel-num/"+admin.getId()+"/"
+                        +telephoneNumber.substring(telephoneNumber.length()-10));
 
             return "É stata inviata un email di conferma, cliccare sul link fornito per email " +
                     "per confermare il nuovo numero di telefono";
@@ -137,7 +138,7 @@ public class AdminService {
         adminJwt.orElseThrow(() -> new Exception("Non autorizzato!"));
 
         Admin admin = adminJwt.get();
-        admin.setTelephoneNumber(newTelephoneNumber);
+        admin.setTelephoneNumber(fixTelephoneNumber(newTelephoneNumber));
         return adminRepo.saveAndFlush(admin);
     }
     public String updatePassword(HttpServletRequest request, String oldPwd, String newPwd) throws Exception {
