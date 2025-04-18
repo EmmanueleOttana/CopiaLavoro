@@ -100,9 +100,9 @@ public class AdminService {
         if (!newEmail.isEmpty()){
             this.smsService.sendSms(admin.getTelephoneNumber(),
                 "Per modificare l'email cliccare nel link a seguire:\n" +
-                        "http://localhost:8080/human/newEmail/"+admin.getId()+'/'+newEmail);
+                        urlSiteWeb+"/admin/new-email/"+admin.getId()+'/'+newEmail);
 
-            return "Le è stato inviato un sms di conferma, cliccare sul link fornito per sms " +
+            return "É stato inviato un sms di conferma, cliccare sul link fornito per sms " +
                     "per confermare il nuovo indirizzo email";
         }else return "Impossibile inserire questa email!";
     }
@@ -111,9 +111,8 @@ public class AdminService {
         Optional <Admin> adminJwt = adminRepo.findById(id);
         adminJwt.orElseThrow(() -> new Exception("Non autorizzato!"));
 
-        Admin admin = adminJwt.get();
-        admin.setEmail(newEmail);
-        adminRepo.saveAndFlush(admin);
+        adminJwt.get().setEmail(newEmail);
+        adminRepo.saveAndFlush(adminJwt.get());
 
         return "Email modificata con successo!";
     }
@@ -126,10 +125,10 @@ public class AdminService {
         if (!telephoneNumber.isEmpty()){
             this.postman.sendMail(admin.getEmail(),"Cambio numero di telefono",
                 "Per modificare il numero di telefono cliccare nel link a sottostante:\n" +
-                        "http://localhost:8080/human/newTelNum/"+admin.getId()+"/"+telephoneNumber);
+                        urlSiteWeb+"/admin/new-tel-num/"+admin.getId()+"/"+telephoneNumber);
 
-            return "Le è stato inviato un sms di conferma, cliccare sul link fornito per sms " +
-                    "per confermare il nuovo indirizzo email";
+            return "É stata inviata un email di conferma, cliccare sul link fornito per email " +
+                    "per confermare il nuovo numero di telefono";
         }else return "Impossibile inserire questa email!";
     }
 
@@ -141,7 +140,18 @@ public class AdminService {
         admin.setTelephoneNumber(newTelephoneNumber);
         return adminRepo.saveAndFlush(admin);
     }
+    public String updatePassword(HttpServletRequest request, String oldPwd, String newPwd) throws Exception {
+        Optional<Admin> adminOpt = findAdminByRequest(request);
+        Admin admin = adminOpt.orElseThrow(() -> new Exception("Non autorizzato!"));
 
+        if (!EncryptionPw.checkPassword(admin.getPassword(), oldPwd)) {
+            throw new Exception("Vecchia password errata!");
+        }
+        admin.setPassword(EncryptionPw.hashPassword(newPwd));
+        adminRepo.saveAndFlush(admin);
+
+        return "Password aggiornata con successo!";
+    }
     public Optional <Admin> findAdminByRequest(HttpServletRequest request){
         return adminRepo.findByUsername(tokenJWT.extractUsername(request.getHeader("BearerToken")));
     }

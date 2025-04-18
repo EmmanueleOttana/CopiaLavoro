@@ -49,6 +49,12 @@ public class AdminController {
     public Admin acceptTelephoneNum(@PathVariable long id, @PathVariable String telephoneNumber) throws Exception {
         return adminService.acceptNewTelephoneNumber(id, telephoneNumber);
     }
+    @PatchMapping("/updatePassword")
+    public String updatePassword(HttpServletRequest request,
+                                 @RequestParam String oldPassword,
+                                 @RequestParam String newPassword) throws Exception {
+        return adminService.updatePassword(request, oldPassword, newPassword);
+    }
     @GetMapping("/getAll")
     public List<Admin> getAll(HttpServletRequest request) throws Exception {
         return adminService.getAll(request);
