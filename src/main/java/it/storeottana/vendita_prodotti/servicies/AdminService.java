@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,8 +29,8 @@ public class AdminService {
     private SmsService smsService;
     @Value("${authCode}")
     private String authCode;
-    @Value("${urlBackend}")
-    private String urlBackend;
+    @Value("${urlSiteWeb}")
+    private String urlSiteWeb;
     @Value("${companyEmail}")
     private String companyEmail;
 
@@ -45,12 +46,12 @@ public class AdminService {
         if (adminRepo.findByTelephoneNumber(adminRequest.getTelephoneNumber()).isPresent()) return "Numero di telefono già registrato!";
 
         Admin adminNew = new Admin(adminRequest.getUsername(), adminRequest.getEmail(),
-                adminRequest.getTelephoneNumber(), EncryptionPw.hashPassword(adminRequest.getPassword()));
+                fixTelephoneNumber(adminRequest.getTelephoneNumber()), EncryptionPw.hashPassword(adminRequest.getPassword()));
         adminRepo.saveAndFlush(adminNew);
 
         this.postman.sendMail(adminNew.getEmail(),"Attivazione account",
                 "Per inviare la richiesta d'attivazione dell'account cliccare nel link a seguire:\n" +
-                        urlBackend+"/admin/activeAccount/"+adminNew.getId()+"/"+adminNew.getActivationCode());
+                        urlSiteWeb +"/admin/activeAccount/"+adminNew.getId()+"/"+adminNew.getActivationCode());
 
         return "L'utente "+ adminNew.getUsername() + " è stato creato con successo!" +
                 "\nConfermare l'indirizzo email per attivarlo";
@@ -67,7 +68,7 @@ public class AdminService {
 
             this.postman.sendMail(companyEmail,"Richiesta d'attivazione account",
                     "Per attivare l'account di "+admin.getUsername()+" cliccare nel link a seguire:\n" +
-                            urlBackend+"/admin/acceptance/"+admin.getId());
+                            urlSiteWeb +"/admin/acceptance/"+admin.getId());
 
             return "Registrazione effettuata con successo!";
         }else {
@@ -162,5 +163,33 @@ public class AdminService {
 
         return "Logout effettuato!";
     }
+    public String fixTelephoneNumber(String telephoneNumber){
+        String[] s = telephoneNumber.split(" ");
+        StringBuilder sb = new StringBuilder();
+
+        Arrays.stream(s).forEach(x -> sb.append(x.trim()));
+        if (sb.toString().toCharArray()[0] != '+'){
+            try {
+                Long.parseLong(sb.toString());
+                if (sb.toString().length() != 10) throw new NumberFormatException("Il formato del numero inserito non è valido!");
+            }catch (NumberFormatException e){
+                throw new NumberFormatException("Il formato del numero inserito non è valido!");
+            }
+            return "+39"+sb;
+        }else{
+            String num = sb.substring(1);
+            try {
+                Long.parseLong(num);
+                if (sb.toString().length() > 10) throw new NumberFormatException("Il formato del numero inserito non è valido!");
+            }catch (NumberFormatException e){
+                throw new NumberFormatException("Il formato del numero inserito non è valido!");
+            }
+            return sb.toString();
+        }
+
+    }
+
+
+
 
 }
