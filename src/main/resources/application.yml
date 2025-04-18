@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: prod-local
+    active: dev
 
 sendgrid:
   api:
