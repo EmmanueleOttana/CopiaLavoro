@@ -19,9 +19,10 @@ public class Product {
     @ElementCollection
     @Column(nullable = false)
     private List<String> fileNames;
-    @Column(nullable = false)
+    @Column(nullable = false, length = 350)
     private String title;
-    @Column(nullable = false)
+    @Lob
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
     @Column(nullable = false)
     private double price;
