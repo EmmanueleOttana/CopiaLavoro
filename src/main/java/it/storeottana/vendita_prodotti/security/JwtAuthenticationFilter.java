@@ -2,6 +2,7 @@ package it.storeottana.vendita_prodotti.security;
 
 import it.storeottana.vendita_prodotti.entities.Admin;
 import it.storeottana.vendita_prodotti.entities.Cart;
+import it.storeottana.vendita_prodotti.repositories.CartRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -33,7 +34,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         String headerToken = request.getHeader("BearerToken");
-        String cookieToken = tokenJWT.getTokenFromCookie(request);
 
         if (StringUtils.hasText(headerToken)) {
             try {
@@ -48,14 +48,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             } catch (Exception e) {
                 System.err.println("Errore nella validazione del token: " + e.getMessage());
             }
-        }
-        if (cookieToken == null) {
-            String username = tokenJWT.guestUsername();
-            Cart newCart = new Cart();
-            newCart.setUsername(username);
-            newCart.setToken(tokenJWT.createToken(username));
-
-            tokenJWT.addTokenToCookie(response, newCart.getToken());
         }
 
         filterChain.doFilter(request, response);

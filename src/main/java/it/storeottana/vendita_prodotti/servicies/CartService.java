@@ -31,11 +31,7 @@ public class CartService {
         LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
         cartRepo.deleteExpiredCarts(oneMonthAgo);
     }
-
-    public String addCart(long idProduct, int quantity, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        Optional<Product> productR = productRepo.findById(idProduct);
-        productR.orElseThrow(() -> new Exception("Prodotto non trovato"));
-
+    public Cart cartManagement(HttpServletRequest request, HttpServletResponse response){
         String token = tokenJWT.getTokenFromCookie(request);
         String username = token != null ? tokenJWT.extractUsername(token) : tokenJWT.guestUsername();
 
@@ -43,8 +39,19 @@ public class CartService {
             Cart newCart = new Cart();
             newCart.setUsername(username);
             newCart.setToken(tokenJWT.createToken(username));
+
+            cartRepo.saveAndFlush(newCart);
             return newCart;
         });
+
+        tokenJWT.addTokenToCookie(response, cart.getToken());
+        return cart;
+    }
+    public String addCart(long idProduct, int quantity, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Optional<Product> productR = productRepo.findById(idProduct);
+        productR.orElseThrow(() -> new Exception("Prodotto non trovato"));
+
+        Cart cart = cartManagement(request,response);
 
         if (!isFoundProduct(cart, productR.get())) {
             addProducts(cart, productR.get(), quantity);
@@ -93,14 +100,8 @@ public class CartService {
         }
         cart.setTotalCost(totalCost + cart.getOrderPriority().calculateShippingCost(totalCost));
     }
-    public Object getCart(HttpServletRequest request) throws Exception {
-        String token = tokenJWT.getTokenFromCookie(request);
-        if (token == null) return "Token non trovato!";
-
-        Optional <Cart> cartR = cartRepo.findByUsername(tokenJWT.extractUsername(token));
-        cartR.orElseThrow(() -> new Exception("Carrerllo non trovato!"));
-
-        return cartR.get();
+    public Object getCart(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        return cartManagement(request,response);
     }
     public String emptyCart(HttpServletRequest request) {
         String token = tokenJWT.getTokenFromCookie(request);

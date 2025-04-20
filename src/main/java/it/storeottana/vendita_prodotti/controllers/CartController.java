@@ -25,8 +25,8 @@ public class CartController {
         return cartService.addShippingData(request, shippingData);
     }
     @GetMapping("/get")
-    public Object getCart(HttpServletRequest request) throws Exception {
-        return cartService.getCart(request);
+    public Object getCart(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        return cartService.getCart(request, response);
     }
 
     @DeleteMapping("/empty")
