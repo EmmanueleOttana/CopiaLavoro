@@ -57,8 +57,6 @@ public class CartService {
             addProducts(cart, productR.get(), quantity);
         }
 
-        tokenJWT.addTokenToCookie(response, cart.getToken());
-
         return "Prodotto aggiunto!";
     }
     public boolean addShippingData(HttpServletRequest request, ShippingData shippingData) throws Exception {
@@ -100,7 +98,7 @@ public class CartService {
         }
         cart.setTotalCost(totalCost + cart.getOrderPriority().calculateShippingCost(totalCost));
     }
-    public Object getCart(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public Cart getCart(HttpServletRequest request, HttpServletResponse response){
         return cartManagement(request,response);
     }
     public String emptyCart(HttpServletRequest request) {

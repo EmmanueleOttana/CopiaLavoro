@@ -1,6 +1,7 @@
 package it.storeottana.vendita_prodotti.controllers;
 
 import it.storeottana.vendita_prodotti.dto.ShippingData;
+import it.storeottana.vendita_prodotti.entities.Cart;
 import it.storeottana.vendita_prodotti.entities.OrderPriority;
 import it.storeottana.vendita_prodotti.servicies.CartService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,7 +26,7 @@ public class CartController {
         return cartService.addShippingData(request, shippingData);
     }
     @GetMapping("/get")
-    public Object getCart(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public Cart getCart(HttpServletRequest request, HttpServletResponse response) {
         return cartService.getCart(request, response);
     }
 
