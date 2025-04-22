@@ -122,7 +122,6 @@ public class PaymentService {
                 paramsBuilder.addLineItem(lineItem);
             }
 
-            // Assumiamo che il campo in Cart sia chiamato deliveryMethods e che per spedizione rapida il valore sia "PRIORITARIO"
             if (cart.getOrderPriority().equals(OrderPriority.PRIORITARIO)) {
                 // Calcola il 20% del totale dei prodotti
                 long shippingFee = Math.round(productsTotalInCents * 0.2);

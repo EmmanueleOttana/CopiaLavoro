@@ -17,7 +17,7 @@ public class ProductController {
     private ProductService productService;
 
     @PostMapping("/create")
-    public Object create(@RequestParam String name, @RequestParam MultipartFile[] files,
+    public Product create(@RequestParam String name, @RequestParam MultipartFile[] files,
                          @RequestParam String title, @RequestParam String description,
                          @RequestParam double price, HttpServletRequest request) throws Exception {
         return productService.create(name, files, title, description, price, request);

@@ -23,9 +23,10 @@ public class Feedback {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    public Feedback(String description, int stars, List<String> images) {
+    public Feedback(String description, int stars, Product product) {
         this.description = description;
         this.stars = stars;
-        this.images = images;
+        this.product = product;
     }
+
 }

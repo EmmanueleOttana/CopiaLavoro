@@ -29,7 +29,6 @@ public class CartController {
     public Cart getCart(HttpServletRequest request, HttpServletResponse response) {
         return cartService.getCart(request, response);
     }
-
     @DeleteMapping("/empty")
     public String emptyCart(HttpServletRequest request){
         return cartService.emptyCart(request);

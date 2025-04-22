@@ -1,22 +1,16 @@
 package it.storeottana.vendita_prodotti.servicies;
 
 import com.cloudinary.Cloudinary;
-import com.cloudinary.api.ApiResponse;
 import com.cloudinary.utils.ObjectUtils;
 import it.storeottana.vendita_prodotti.entities.Admin;
-import it.storeottana.vendita_prodotti.entities.Cart;
 import it.storeottana.vendita_prodotti.entities.Product;
-import it.storeottana.vendita_prodotti.repositories.CartRepo;
 import it.storeottana.vendita_prodotti.repositories.ProductRepo;
 import it.storeottana.vendita_prodotti.utils.FileStorageService;
 import it.storeottana.vendita_prodotti.utils.SmsService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,32 +35,13 @@ public class ProductService {
     @Value("${bossCode}")
     private String bossCode;
 
-    public List<String> upload(MultipartFile[] files) throws Exception {
-        List<String> fileNames = new ArrayList<>();
-        for ( MultipartFile file : files ) {
-            String singleUpload = fileStorageService.estraiNomeFile(fileStorageService.uploadToCloudinary(file));
-            fileNames.add(singleUpload);
-        }
-        return fileNames;
-    }
-
-    public byte[] download(String fileName, HttpServletResponse response) throws Exception {
-        String extension = FilenameUtils.getExtension(fileName);
-        switch (extension) {
-            case "jpg", "jpeg" -> response.setContentType(MediaType.IMAGE_JPEG_VALUE);
-            case "gif" -> response.setContentType(MediaType.IMAGE_GIF_VALUE);
-            case "png" -> response.setContentType(MediaType.IMAGE_PNG_VALUE);
-        }
-        response.setHeader("Content-Disposition","attachment; fileName=\""+fileName+"\"");
-        return fileStorageService.download(fileName);
-    }
-    public Object create(String name, MultipartFile[] files, String title, String description, double price,
+    public Product create(String name, MultipartFile[] files, String title, String description, double price,
                             HttpServletRequest request) throws Exception {
 
         Optional<Admin> adminRequest = adminService.findAdminByRequest(request);
-        if (adminRequest.isEmpty() || !adminRequest.get().isActive() || adminRequest.get().isSuspended()) return "Errore!";
+        if (adminRequest.isEmpty() || !adminRequest.get().isActive() || adminRequest.get().isSuspended()) throw new Exception("Errore!");
 
-        Product product = new Product(name, upload(files),title,description,price);
+        Product product = new Product(name, fileStorageService.loadingImages(files),title,description,price);
         return productRepo.saveAndFlush(product);
     }
 
@@ -108,7 +83,7 @@ public class ProductService {
         Product productDB = productRepo.findById(idProduct)
                 .orElseThrow(() -> new Exception("Prodotto non trovato"));
 
-        List<String> newFileNames = upload(files);
+        List<String> newFileNames = fileStorageService.loadingImages(files);
 
         productDB.getFileNames().addAll(newFileNames);
         return productDB.getFileNames();
